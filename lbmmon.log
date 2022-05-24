@@ -1,0 +1,691 @@
+Core-7911-1: Onload extensions API has been dynamically loaded
+
+Core-10403-150: Context (0x30f6780) created with ContextID (3702646498) and ContextName [29west_statistics_context]
+
+Core-10995-140: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.101:14371:13a32f52[3332436639]], Beginning of Transport Session
+
+Core-10995-140: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.101:14372:4334b7b7[304152798]], Beginning of Transport Session
+
+Core-10995-140: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.121:14371:2299a8ff[1660203866]], Beginning of Transport Session
+
+Core-10995-140: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.121:14372:31513f94[2627349138]], Beginning of Transport Session
+
+
+Context statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:19 2022
+	Topic resolution datagrams sent                    : 3
+	Topic resolution datagram bytes sent               : 189
+	Topic resolution datagrams received                : 5
+	Topic resolution datagram bytes received           : 333
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 1
+	Unresolved topics in receiver topic map            : 1
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Context statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:19 2022
+	Topic resolution datagrams sent                    : 2
+	Topic resolution datagram bytes sent               : 144
+	Topic resolution datagrams received                : 5
+	Topic resolution datagram bytes received           : 333
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 0
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Source statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:20 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams sent                                 : 0
+	LBT-RM datagram bytes sent                            : 0
+	LBT-RM datagrams in transmission window               : 0
+	LBT-RM datagram bytes in transmission window          : 0
+	LBT-RM NAK packets received                           : 0
+	LBT-RM NAKs received                                  : 0
+	LBT-RM NAKs ignored                                   : 0
+	LBT-RM NAKs shed                                      : 0
+	LBT-RM NAKs ignored (retransmit delay)                : 0
+	LBT-RM retransmission datagrams sent                  : 0
+	LBT-RM datagrams queued by rate control               : 0
+	LBT-RM retransmission datagrams queued by rate control: 0
+	LBT-RM retransmission datagram bytes sent             : 0
+
+Context statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:20 2022
+	Topic resolution datagrams sent                    : 7
+	Topic resolution datagram bytes sent               : 1001
+	Topic resolution datagrams received                : 11
+	Topic resolution datagram bytes received           : 1422
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 1
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Source statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:20 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams sent                                 : 0
+	LBT-RM datagram bytes sent                            : 0
+	LBT-RM datagrams in transmission window               : 0
+	LBT-RM datagram bytes in transmission window          : 0
+	LBT-RM NAK packets received                           : 0
+	LBT-RM NAKs received                                  : 0
+	LBT-RM NAKs ignored                                   : 0
+	LBT-RM NAKs shed                                      : 0
+	LBT-RM NAKs ignored (retransmit delay)                : 0
+	LBT-RM retransmission datagrams sent                  : 0
+	LBT-RM datagrams queued by rate control               : 0
+	LBT-RM retransmission datagrams queued by rate control: 0
+	LBT-RM retransmission datagram bytes sent             : 0
+
+Context statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:20 2022
+	Topic resolution datagrams sent                    : 2
+	Topic resolution datagram bytes sent               : 286
+	Topic resolution datagrams received                : 11
+	Topic resolution datagram bytes received           : 1422
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 2
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Receiver statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:24 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 3628
+	LBT-RM datagram bytes received                            : 206796
+	LBT-RM NAK packets sent                                   : 0
+	LBT-RM NAKs sent                                          : 0
+	Lost LBT-RM datagrams detected                            : 0
+	NCFs received (ignored)                                   : 0
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 18446744073709551615ms
+	Loss recovery mean time                                   : 0ms
+	Loss recovery maximum time                                : 0ms
+	Minimum transmissions per individual NAK                  : 18446744073709551615
+	Mean transmissions per individual NAK                     : 0
+	Maximum transmissions per individual NAK                  : 0
+	Duplicate LBT-RM datagrams received                       : 334
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM LBM messages received                              : 3628
+	LBT-RM LBM messages received with uninteresting topic     : 0
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Receiver statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:24 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 3724
+	LBT-RM datagram bytes received                            : 212268
+	LBT-RM NAK packets sent                                   : 0
+	LBT-RM NAKs sent                                          : 0
+	Lost LBT-RM datagrams detected                            : 0
+	NCFs received (ignored)                                   : 0
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 18446744073709551615ms
+	Loss recovery mean time                                   : 0ms
+	Loss recovery maximum time                                : 0ms
+	Minimum transmissions per individual NAK                  : 18446744073709551615
+	Mean transmissions per individual NAK                     : 0
+	Maximum transmissions per individual NAK                  : 0
+	Duplicate LBT-RM datagrams received                       : 313
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM LBM messages received                              : 3724
+	LBT-RM LBM messages received with uninteresting topic     : 0
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Context statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:24 2022
+	Topic resolution datagrams sent                    : 9
+	Topic resolution datagram bytes sent               : 648
+	Topic resolution datagrams received                : 135
+	Topic resolution datagram bytes received           : 18280
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 3602
+	LBT-RM datagram bytes received                            : 205314
+	LBT-RM NAK packets sent                                   : 167
+	LBT-RM NAKs sent                                          : 371
+	Lost LBT-RM datagrams detected                            : 374
+	NCFs received (ignored)                                   : 32
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 22ms
+	Loss recovery mean time                                   : 550ms
+	Loss recovery maximum time                                : 2038ms
+	Minimum transmissions per individual NAK                  : 1
+	Mean transmissions per individual NAK                     : 2
+	Maximum transmissions per individual NAK                  : 6
+	Duplicate LBT-RM datagrams received                       : 0
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM LBM messages received                              : 3602
+	LBT-RM LBM messages received with uninteresting topic     : 1806
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 3678
+	LBT-RM datagram bytes received                            : 209646
+	LBT-RM NAK packets sent                                   : 208
+	LBT-RM NAKs sent                                          : 347
+	Lost LBT-RM datagrams detected                            : 381
+	NCFs received (ignored)                                   : 28
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 21ms
+	Loss recovery mean time                                   : 829ms
+	Loss recovery maximum time                                : 2596ms
+	Minimum transmissions per individual NAK                  : 1
+	Mean transmissions per individual NAK                     : 2
+	Maximum transmissions per individual NAK                  : 5
+	Duplicate LBT-RM datagrams received                       : 0
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM LBM messages received                              : 3678
+	LBT-RM LBM messages received with uninteresting topic     : 0
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Context statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
+	Topic resolution datagrams sent                    : 29
+	Topic resolution datagram bytes sent               : 1827
+	Topic resolution datagrams received                : 138
+	Topic resolution datagram bytes received           : 18629
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 581
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Source statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:25 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams sent                                 : 3898
+	LBT-RM datagram bytes sent                            : 222186
+	LBT-RM datagrams in transmission window               : 3898
+	LBT-RM datagram bytes in transmission window          : 222186
+	LBT-RM NAK packets received                           : 209
+	LBT-RM NAKs received                                  : 441
+	LBT-RM NAKs ignored                                   : 34
+	LBT-RM NAKs shed                                      : 0
+	LBT-RM NAKs ignored (retransmit delay)                : 0
+	LBT-RM retransmission datagrams sent                  : 407
+	LBT-RM datagrams queued by rate control               : 0
+	LBT-RM retransmission datagrams queued by rate control: 0
+	LBT-RM retransmission datagram bytes sent             : 23199
+
+Context statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:25 2022
+	Topic resolution datagrams sent                    : 50
+	Topic resolution datagram bytes sent               : 7150
+	Topic resolution datagrams received                : 134
+	Topic resolution datagram bytes received           : 18439
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 1
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Source statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:25 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams sent                                 : 4009
+	LBT-RM datagram bytes sent                            : 228513
+	LBT-RM datagrams in transmission window               : 4009
+	LBT-RM datagram bytes in transmission window          : 228513
+	LBT-RM NAK packets received                           : 167
+	LBT-RM NAKs received                                  : 371
+	LBT-RM NAKs ignored                                   : 37
+	LBT-RM NAKs shed                                      : 0
+	LBT-RM NAKs ignored (retransmit delay)                : 0
+	LBT-RM retransmission datagrams sent                  : 334
+	LBT-RM datagrams queued by rate control               : 0
+	LBT-RM retransmission datagrams queued by rate control: 0
+	LBT-RM retransmission datagram bytes sent             : 19038
+
+Context statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:25 2022
+	Topic resolution datagrams sent                    : 52
+	Topic resolution datagram bytes sent               : 9393
+	Topic resolution datagrams received                : 135
+	Topic resolution datagram bytes received           : 18685
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 2
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+Core-10995-141: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.121:14372:31513f94[2627349138]], End of Transport Session
+
+
+Receiver statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:30 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 5000
+	LBT-RM datagram bytes received                            : 285000
+	LBT-RM NAK packets sent                                   : 0
+	LBT-RM NAKs sent                                          : 0
+	Lost LBT-RM datagrams detected                            : 0
+	NCFs received (ignored)                                   : 0
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 18446744073709551615ms
+	Loss recovery mean time                                   : 0ms
+	Loss recovery maximum time                                : 0ms
+	Minimum transmissions per individual NAK                  : 18446744073709551615
+	Mean transmissions per individual NAK                     : 0
+	Maximum transmissions per individual NAK                  : 0
+	Duplicate LBT-RM datagrams received                       : 571
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM LBM messages received                              : 5000
+	LBT-RM LBM messages received with uninteresting topic     : 0
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Receiver statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:30 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 5000
+	LBT-RM datagram bytes received                            : 285000
+	LBT-RM NAK packets sent                                   : 0
+	LBT-RM NAKs sent                                          : 0
+	Lost LBT-RM datagrams detected                            : 0
+	NCFs received (ignored)                                   : 0
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 18446744073709551615ms
+	Loss recovery mean time                                   : 0ms
+	Loss recovery maximum time                                : 0ms
+	Minimum transmissions per individual NAK                  : 18446744073709551615
+	Mean transmissions per individual NAK                     : 0
+	Maximum transmissions per individual NAK                  : 0
+	Duplicate LBT-RM datagrams received                       : 541
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM LBM messages received                              : 5000
+	LBT-RM LBM messages received with uninteresting topic     : 0
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Context statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:30 2022
+	Topic resolution datagrams sent                    : 14
+	Topic resolution datagram bytes sent               : 1008
+	Topic resolution datagrams received                : 165
+	Topic resolution datagram bytes received           : 22147
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Source statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:30 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams sent                                 : 5000
+	LBT-RM datagram bytes sent                            : 285000
+	LBT-RM datagrams in transmission window               : 5000
+	LBT-RM datagram bytes in transmission window          : 285000
+	LBT-RM NAK packets received                           : 295
+	LBT-RM NAKs received                                  : 598
+	LBT-RM NAKs ignored                                   : 57
+	LBT-RM NAKs shed                                      : 0
+	LBT-RM NAKs ignored (retransmit delay)                : 0
+	LBT-RM retransmission datagrams sent                  : 541
+	LBT-RM datagrams queued by rate control               : 0
+	LBT-RM retransmission datagrams queued by rate control: 0
+	LBT-RM retransmission datagram bytes sent             : 30837
+
+Context statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:30 2022
+	Topic resolution datagrams sent                    : 60
+	Topic resolution datagram bytes sent               : 8580
+	Topic resolution datagrams received                : 160
+	Topic resolution datagram bytes received           : 21814
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 1
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:30 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 4994
+	LBT-RM datagram bytes received                            : 284658
+	LBT-RM NAK packets sent                                   : 342
+	LBT-RM NAKs sent                                          : 719
+	Lost LBT-RM datagrams detected                            : 514
+	NCFs received (ignored)                                   : 47
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 22ms
+	Loss recovery mean time                                   : 1315ms
+	Loss recovery maximum time                                : 2736ms
+	Minimum transmissions per individual NAK                  : 1
+	Mean transmissions per individual NAK                     : 2
+	Maximum transmissions per individual NAK                  : 8
+	Duplicate LBT-RM datagrams received                       : 0
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 2
+	LBT-RM LBM messages received                              : 4994
+	LBT-RM LBM messages received with uninteresting topic     : 2495
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:30 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+Transport: LBT-RM
+	LBT-RM datagrams received                                 : 5000
+	LBT-RM datagram bytes received                            : 285000
+	LBT-RM NAK packets sent                                   : 295
+	LBT-RM NAKs sent                                          : 598
+	Lost LBT-RM datagrams detected                            : 487
+	NCFs received (ignored)                                   : 51
+	NCFs received (shed)                                      : 0
+	NCFs received (retransmit delay)                          : 0
+	NCFs received (unknown)                                   : 0
+	Loss recovery minimum time                                : 21ms
+	Loss recovery mean time                                   : 1971ms
+	Loss recovery maximum time                                : 3228ms
+	Minimum transmissions per individual NAK                  : 1
+	Mean transmissions per individual NAK                     : 2
+	Maximum transmissions per individual NAK                  : 5
+	Duplicate LBT-RM datagrams received                       : 0
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM LBM messages received                              : 5000
+	LBT-RM LBM messages received with uninteresting topic     : 0
+	LBT-RM LBM requests received                              : 0
+	LBT-RM datagrams dropped (size)                           : 0
+	LBT-RM datagrams dropped (type)                           : 0
+	LBT-RM datagrams dropped (version)                        : 0
+	LBT-RM datagrams dropped (hdr)                            : 0
+	LBT-RM datagrams dropped (other)                          : 0
+	LBT-RM datagrams received out of order                    : 0
+
+Context statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:30 2022
+	Topic resolution datagrams sent                    : 34
+	Topic resolution datagram bytes sent               : 2142
+	Topic resolution datagrams received                : 165
+	Topic resolution datagram bytes received           : 22147
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 0
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 755
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+Core-10995-141: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.121:14371:2299a8ff[1660203866]], End of Transport Session
+
+
+Context statistics received from lbmwrcv at 10.29.3.101, process ID=96ee, object ID=2c99220, context instance=27a4abdfc5eeaba5, domain ID=0, sent Mon May 23 15:11:35 2022
+	Topic resolution datagrams sent                    : 19
+	Topic resolution datagram bytes sent               : 1382
+	Topic resolution datagrams received                : 177
+	Topic resolution datagram bytes received           : 23122
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 0
+	Unresolved topics in receiver topic map            : 1
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 0
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+
+Context statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:35 2022
+	Topic resolution datagrams sent                    : 39
+	Topic resolution datagram bytes sent               : 2457
+	Topic resolution datagrams received                : 177
+	Topic resolution datagram bytes received           : 23122
+	Topic resolution datagrams dropped (version)       : 0
+	Topic resolution datagrams dropped (type)          : 0
+	Topic resolution datagrams dropped (malformed)     : 0
+	Topic resolution send failures                     : 0
+	Topics in source topic map                         : 0
+	Topics in receiver topic map                       : 2
+	Unresolved topics in receiver topic map            : 1
+	Unknown LBT-RM datagrams received                  : 0
+	Unknown LBT-RU datagrams received                  : 0
+	Number of times message send blocked               : 0
+	Number of times message send returned EWOULDBLOCK  : 0
+	Number of times response send blocked              : 0
+	Number of times response send returned EWOULDBLOCK : 0
+	Number of duplicate UIM messages dropped           : 0
+	Number of UIM messages received without stream info: 0
+	Number of data message fragments lost              : 755
+	Number of data message fragments unrecoverably lost: 0
+	Receiver callbacks min service time (microseconds) : 18446744073709551615
+	Receiver callbacks max service time (microseconds) : 0
+	Receiver callbacks mean service time (microseconds): 0
+Core-10995-141: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.101:14371:13a32f52[3332436639]], End of Transport Session
+
+Core-10995-141: [LBMMON] Topic[/29west/statistics] Source[TCP:10.29.3.101:14372:4334b7b7[304152798]], End of Transport Session
+

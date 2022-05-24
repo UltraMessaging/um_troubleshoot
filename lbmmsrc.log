@@ -1,0 +1,13 @@
+Core-7911-1: Onload extensions API has been dynamically loaded
+Core-10403-150: Context (0x268ab00) created with ContextID (898231054) and ContextName [29west_statistics_context]
+Core-10403-151: Reactor Only Context (0x271d010) created with ContextID (169066388) and ContextName [(NULL)]
+Core-10403-150: Context (0x260f880) created with ContextID (3568825159) and ContextName [(NULL)]
+Creating 2 sources
+Delaying sending for 1 second...
+Created 2 Sources. Will start sending data now.
+Using 1 threads to send 5000 messages of size 25 bytes (5000 messages per thread).
+Done sending on thread 0. Waiting for any other threads to finish.
+stats 1/1:[LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400] sent 5000/285000, txw 5000/285000, naks 618/251, ignored 63/0, shed 0, rxs 555, rctlr 0/0
+Lingering for 1 seconds...
+Deleting sources....
+Deleted 2 sources
