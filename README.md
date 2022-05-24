@@ -34,29 +34,41 @@ See https://github.com/UltraMessaging/um_troubleshoot for code and documentation
 
 # INTRODUCTION
 
-Informatica recommends that Ultra Messaging users enable the
-automatic monitoring feature in their UM-based applications and most
-UM daemons (Store, DRO, etc.).
+This repository is intended to train Ultra Messaging users
+to perform some simple troubleshooting using monitoring data
+and a packet capture.
+
+Informatica recommends that UM-based applications and daemons configure
+automatic monitoring.
+
+Informatica also recommends the use of an "always on" packet capture
+appliance,
+like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
 
 For a deeper explanation of enabling automatic monitoring,
 see the repository [mon_demo](https://github.com/UltraMessaging/mon_demo).
-This repository builds on the mon_demo.
-
-Informatica also recommends the use of an "always on" packet capture appliance,
-like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
+This repository builds on the mon_demo, with some modifications.
 
 ## Test Setup
 
-Informatica ran a simple demonstration test with its standard example
-applications and captured the packets for this troubleshooting session.
-The shell script "tst.sh" can reproduce approximatly the same behavior.
+We ran the shell script "tst.sh" which executes set of standard UM
+example applicaitons and captures monitoring data (in "lbmmon.log")
+and packets (in "test.pcap").
 
-An important part of the test script is the line:
+You can also run "tst.sh", but will need to make changes for your environment
+to the files "demo.cfg", "mon.cfg", and "lbmrd.xml".
+
+An important part of the test is the line:
 ````
 LBTRM_LOSS_RATE=10 lbmrcv -c demo.cfg -E 29west.example.multi.0 2>&1 >lbmrcv.log &
 ````
-This runs a subscriber with a randomized LBT-RM loss rate of 10%.
+This runs a subscriber with an artificial randomized LBT-RM loss rate of 10%.
 I.e. about 1 in 10 received messages will be dropped.
+
+Here's an illustration of the test:
+![Figure 1](figure1.png)
+See [Interpreting the Data]](https://github.com/UltraMessaging/mon_demo#interpreting-the-data)
+for more explanation.
 
 # MONITORING DATA
 
