@@ -1,5 +1,5 @@
 # um_troubleshoot
-A somewhat contrived sample troubleshooting session with Ultra Messaging.
+Sample troubleshooting session with Ultra Messaging.
 
 # Table of contents
 
@@ -41,7 +41,7 @@ and a packet capture.
 Informatica recommends that UM-based applications and daemons configure
 automatic monitoring.
 
-Informatica also recommends the use of an "always on" packet capture
+Informatica also recommends the use of an "always-on" packet capture
 appliance,
 like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
 
@@ -51,8 +51,8 @@ This repository builds on the mon_demo, with some modifications.
 
 ## Test Setup
 
-We ran the shell script "tst.sh" which executes set of standard UM
-example applicaitons and captures monitoring data (in "lbmmon.log")
+We ran the shell script "tst.sh", which executes a set of standard UM
+example applications and captures monitoring data (in "lbmmon.log")
 and packets (in "test.pcap").
 
 You can also run "tst.sh", but will need to make changes for your environment
@@ -63,14 +63,29 @@ An important part of the test is the line:
 LBTRM_LOSS_RATE=10 lbmrcv -c demo.cfg -E 29west.example.multi.0 2>&1 >lbmrcv.log &
 ````
 This runs a subscriber with an artificial randomized LBT-RM loss rate of 10%.
-I.e. about 1 in 10 received messages will be dropped.
+I.e., about 1 in 10 received messages will be dropped.
 
 Here's an illustration of the test:
 ![Figure 1](figure1.png)
-See [Interpreting the Data]](https://github.com/UltraMessaging/mon_demo#interpreting-the-data)
+See [Interpreting the Data](https://github.com/UltraMessaging/mon_demo#interpreting-the-data)
 for more explanation.
 
+# PREPARATION
+
+Make sure you have a recent version of
+[Wireshark](https://www.wireshark.org).
+It is not necessary to have Ultra Messaging installed to perform
+these steps.
+
+Download the contents of
+[this repository](https://github.com/UltraMessaging/um_troubleshoot).
+Click the green "Code" button near the top of that page,
+and select "Download ZIP".
+Expand it and "cd" to it.
+
 # MONITORING DATA
+
+To start, let's look for the most serious problem: unrecoverable loss.
 
 ````
 $ egrep "Number of data message fragments unrecoverably lost: [^0]" lbmmon.log
@@ -91,9 +106,9 @@ $
 ````
 
 Yes, there is loss.
-The fact that there is loss, but no "unrecoverable loss" means that the
-LBT-RM reliability algorithms did their job. I.e. even with 10% of received
-packets dropped, UM was able to get them all retransmitted.
+The fact that there is loss, but no "unrecoverable loss", means that the
+LBT-RM reliability algorithms did their job. I.e., even with 10% of received
+packets dropped, UM got them all retransmitted.
 
 Let's get some details.
 
@@ -101,7 +116,7 @@ Let's get some details.
 $ vi lbmmon.log
 ````
 Search for /Lost LBT-RM datagrams detected *: [^0]/ to find
-the first two records that are reporting loss.
+the first two records reporting loss.
 I will annotate the important lines with "*" in column 1
 (not part of lbmmon.log).
 ````
@@ -142,7 +157,7 @@ We're losing about 10% of our datagrams.
 Note that in both transport sessions, the number of NAKs sent
 is less than the lost packets detected.
 This is because UM does not send NAKs immediately upon gap detection.
-The monitoring system caught the receiver at a time that some NAKs are
+The monitoring thread caught the receiver at a time that some NAKs were
 still in their initial delay interval.
 
 Also note that there were NCFs.
@@ -151,32 +166,32 @@ Something is definitely wrong (which will become clear later).
 
 Finally, the first transport session has a large "uninteresting topic" count
 (1806).
-In fact, fully half of received messages are not subscribed by the application.
-This represents significant wasted effort by UM,
-and suggests that the publisher should map the two topics to separate
+Fully half of the received messages are not subscribed by the application.
+This represents a lot of wasted effort by UM
+and suggests that the publisher should map its two topics to separate
 transport sessions.
 
-In the real world, treating a large "uninteresting topic" count is sometimes
+In the real world, correcting a large "uninteresting topic" count is sometimes
 all that is needed to eliminate loss.
 (In this example, the loss is artificially introduced and is not load-based.)
 
 # PACKET CAPTURE ANALYSIS
 
-Run the WireShark application and read in the "test.pcap" file.
+Run the WireShark application and read the "test.pcap" file.
 
 Set up protocols.
 (These settings are temporary and will go away when WireShark is restarted.
-For perminent changes, use preferences.)
+For permanent changes, use "preferences".)
 
-Right click on third packet -> "Decode As..."
+Right-click on the third packet -> "Decode As..."
 * Double-click on "35101", replace with "12965", "Enter".
-Double-click on "none" (under Current), select "LBMR", Enter.
-* Click the "duplicate" button (to right of "-" button), press Enter.
+Double-click on "none" (under Current), select "LBMR", "Enter".
+* Click the "duplicate" button (right of the "-" button), "Enter".
 Double-click on "35101", replace with "12090", "Enter".
-Double-click on "none" (under Current), select "LBT-RM", Enter.
-* Click the "duplicate" button (to right of "-" button), press Enter.
+Double-click on "none" (under Current), select "LBT-RM", "Enter".
+* Click the "duplicate" button (right of the "-" button), "Enter".
 Double-click on "12090", replace with "12091", "Enter".
-* Click the "duplicate" button (to right of "-" button), press Enter.
+* Click the "duplicate" button (right of the "-" button), "Enter".
 Double-click on "12091", replace with "14400", "Enter".
 
 The "Wireshark Decode As..." should now look like this:
@@ -188,7 +203,7 @@ UDP port   12091   Integer, base 10   (none)    LBT-RM
 UDP port   14400   Integer, base 10   (none)    LBT-RM
 ````
 
-* CLick "OK".
+* Click "OK".
 
 ## Find First NAK
 
@@ -202,8 +217,8 @@ So this NAK corresponds to the monitoring data transport session:
 ````
 Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
 ````
-In middle pane, expand "LBT-RM Protocol", "NAK Header", "NAK List".
-There are two entries: "4" and "1d". (These are hexidecimal numbers.)
+In the middle pane, expand "LBT-RM Protocol", "NAK Header", "NAK List".
+There are two entries: "4" and "1d". (These are hexadecimal numbers.)
 Also note the time: "1.281" seconds.
 
 ## Find the Corresponding Data Packets
@@ -248,13 +263,13 @@ As before,
 packet 261 is from a different transport session (...561) and can be ignored.
 
 The original was sent in packet 82, which was during the time of packet 57's
-initial backof interval.
+initial backoff interval.
 So it was added to the list of packets that need to be NAKed.
-I.e. it did not get its own initial backoff interval; the first loss defines
+I.e., it did not get its own initial backoff interval; the first loss defines
 the start of the backoff interval. Subsequent losses before backoff expiration
 are simply added to the NAK list.
 
-In a real-world loss situation, it is rare to see one or two lost packets.
+It is rare to see one or two lost packets in a real-world loss situation.
 There might be hundreds of lost packets detected within a very short time,
 usually due to a burst of incoming traffic.
 
@@ -269,13 +284,12 @@ The first displayed packet should be:
 
 Select 816. The "Info" column should be, "NCF 1 ncfs Port 12090 ID 0xf9d74f3e".
 This was sent from the publisher to all subscribers.
-It purpose is to inform any subscriber that sent the corresponding NAK
-that the publisher is refusing to send a retransmission,
-for one of several possible reasons.
+Its purpose is to inform any subscriber that sent the corresponding NAK
+that the publisher is refusing to send the retransmission.
 
 In the middle pane, expand "LBT-RM Protocol", "NAK Confirmation Header".
 The "Reason" is "NAK Ignored (0x1)", which means that the NAK arrived too
-soon after the source had already sent a retransmission for the packet(s).
+soon after the source had already sent the retransmission for the packet(s).
 Expand the "NCF List".
 There is one entry: 0xb89.
 
@@ -300,9 +314,9 @@ Filter on "lbtrm.
 Packet 574 is for a different transport session and can be ignored.
 
 So we have a data packet at 1.414, which was lost.
-The first NAK (#484) came at 1.473, which is 59 milliseconds later.
+The first NAK (#484) came at 1.473, 59 milliseconds later.
 The retransmission came right away, within the same millisecond,
-but that was lost also.
+but that was also lost.
 
 The second NAK (#807) came at 1.633, 160 milliseconds after the first.
 This corresponds to the configuration option
@@ -320,9 +334,9 @@ which is not present in the "demo.cfg" config file, and defaults to 500 ms.
 So here's what happened.
 The receiver lost the original data packet with sqn 0xb8,
 and it lost its retransmission.
-After the proper NAK backoff of between 150 and 250 ms, it sent another NAK.
+After the proper NAK backoff of 150 to 250 ms, it sent another NAK.
 But that NAK is still within the source's 500 ms ignore interval.
-So instead of sending a retransmision, the source sent an NCF.
+So instead of sending the retransmission, the source sent an NCF.
 
 This NCF caused the receiver to wait a full second before sending a third NAK.
 This corresponds to the configuration option
@@ -330,7 +344,7 @@ This corresponds to the configuration option
 which is not present in the "demo.cfg" config file, and defaults to 1000 ms.
 
 Thus, the default intervals for NAK backoff and NAK ignore are not optimal.
-If an original packet and its first retransmission is lost,
+If an original packet and its first retransmission are lost,
 the second NAK is guaranteed to generate an NCF.
 
 Informatica recommends shortening the source's ignore interval and
@@ -346,7 +360,7 @@ Some might object to lengthening the NAK backoff since low latency is
 an important goal.
 However, in the real world,
 if you've lost both the original packet and the initial retransmission,
-then you are having a severe traffic overload.
+then you probably had a severe traffic overload.
 Sending retransmissions on top of the already overloading traffic just
 makes the situation worse.
 Better to wait extra time to let the burst subside.
