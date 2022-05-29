@@ -3,6 +3,23 @@ Sample multicast troubleshooting session with Ultra Messaging.
 
 # Table of contents
 
+- [um_troubleshoot](#um_troubleshoot)
+- [Table of contents](#table-of-contents)
+- [COPYRIGHT AND LICENSE](#copyright-and-license)
+- [REPOSITORY](#repository)
+- [INTRODUCTION](#introduction)
+  - [Test Setup](#test-setup)
+- [PREPARATION](#preparation)
+- [MONITORING DATA](#monitoring-data)
+- [RECEIVER LOG FILE](#receiver-log-file)
+- [PACKET CAPTURE ANALYSIS](#packet-capture-analysis)
+  - [Find First NAK](#find-first-nak)
+  - [Find the Corresponding Data Packets](#find-the-corresponding-data-packets)
+  - [Find First NCF](#find-first-ncf)
+  - [Tail Loss](#tail-loss)
+  - [Low Unrecoverable Loss Count](#low-unrecoverable-loss-count)
+  - [Session Messages](#session-messages)
+
 <sup>(table of contents from https://luciopaiva.com/markdown-toc/)</sup>
 
 # COPYRIGHT AND LICENSE
