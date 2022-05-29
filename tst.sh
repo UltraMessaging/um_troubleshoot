@@ -2,7 +2,7 @@
 # tst.sh
 
 D=`pwd`
-source ../lbm.sh
+source ~/lbm.sh
 
 rm -f *.log
 

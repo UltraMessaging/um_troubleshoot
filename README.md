@@ -1,5 +1,5 @@
 # um_troubleshoot
-Sample troubleshooting session with Ultra Messaging.
+Sample multicast troubleshooting session with Ultra Messaging.
 
 # Table of contents
 
@@ -38,12 +38,14 @@ This repository is intended to train Ultra Messaging users
 to perform some simple troubleshooting using monitoring data
 and a packet capture.
 
-Informatica recommends that UM-based applications and daemons configure
-automatic monitoring.
+**RECOMMENDATION**
 
-Informatica also recommends the use of an "always-on" packet capture
-appliance,
-like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
+> Informatica recommends that UM-based applications and daemons configure automatic monitoring.
+>
+> Informatica also recommends the use of an "always-on" packet capture appliance, like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
+
+Although this example was somewhat contrived to demonstrate techniques,
+all of the findings here have also been found in real life with customers.
 
 For a deeper explanation of enabling automatic monitoring,
 see the repository [mon_demo](https://github.com/UltraMessaging/mon_demo).
@@ -55,8 +57,12 @@ We ran the shell script "tst.sh", which executes a set of standard UM
 example applications and captures monitoring data (in "lbmmon.log")
 and packets (in "test.pcap").
 
-You can also run "tst.sh", but will need to make changes for your environment
-to the files "demo.cfg", "mon.cfg", and "lbmrd.xml".
+To reproduce approximately the same results:
+* Edit the files "demo.cfg", "mon.cfg", and "lbmrd.xml", making
+changes for your environment.
+* Make a copy of "lbm.sh" into your home directory, making
+changes for your environment.
+* Run "tst.sh"
 
 An important part of the test is the line:
 ````
@@ -85,15 +91,36 @@ Expand it and "cd" to it.
 
 # MONITORING DATA
 
-To start, let's look for the most serious problem: unrecoverable loss.
+To start, let's look for the most serious problem: unrecoverable loss
+reported to the application (event
+[LBM_MSG_UNRECOVERABLE_LOSS](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a88920e0a4188081f9a14fc8f76c18578)
+or [LBM_MSG_UNRECOVERABLE_LOSS_BURST](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a6629139aaf902976c8df9de3f37d10db).
+The Context Stats have a counter that is incremented each time UM delivers
+those events to the application.
 
 ````
-$ egrep "Number of data message fragments unrecoverably lost: [^0]" lbmmon.log
+$ egrep "Number of data message fragments unrecoverably lost:" lbmmon.log | tail -4
+	Number of data message fragments unrecoverably lost: 0
+	Number of data message fragments unrecoverably lost: 0
+	Number of data message fragments unrecoverably lost: 0
+	Number of data message fragments unrecoverably lost: 0
 $
 ````
 
-Good, no unrecoverable loss by any application
-that is being monitored.
+So far, so good.
+But let's also look for transport unrecoverable loss.
+````
+$ egrep "LBT-RM datagrams unrecoverable.*: [^0]" lbmmon.log | tail -6
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 2
+	LBT-RM datagrams unrecoverable (window advance)           : 0
+	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+````
+Two unrecoverable loss at the transport layer but none at the topic layer?
+This will be explained later.
+
 Let's look for recovered loss.
 
 ````
@@ -104,19 +131,15 @@ $ egrep "Lost LBT-RM datagrams detected *: [^0]" lbmmon.log
     Lost LBT-RM datagrams detected                            : 487
 $
 ````
-
 Yes, there is loss.
-The fact that there is loss, but no "unrecoverable loss", means that the
-LBT-RM reliability algorithms did their job. I.e., even with 10% of received
-packets dropped, UM got them all retransmitted.
 
 Let's get some details.
 
 ````
-$ vi lbmmon.log
+$ vim lbmmon.log
 ````
 Search for /Lost LBT-RM datagrams detected *: [^0]/ to find
-the first two records reporting loss.
+the first record(s) reporting loss.
 I will annotate the important lines with "*" in column 1
 (not part of lbmmon.log).
 ````
@@ -147,12 +170,19 @@ Transport: LBT-RM
     LBT-RM LBM messages received                              : 3678
 *   LBT-RM LBM messages received with uninteresting topic     : 0
 ````
-These two transport sessions are reported by the "lbmrcv" subscriber in
-the same monitoring period (ending 15:11:25).
-And these are the only two transport sessions joined by "lbmrcv".
+These two Receiver Statistics records are reported by the "lbmrcv" subscriber
+in the same monitoring period (at 15:11:25).
+They correspond to the two transport sessions the "lbmrcv" program is joined.
+The transport sessions are identified by their "source strings":
+* LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+* LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+For convenience, I'll refer to these transport sessions by the last
+two hex digits of the session ID: "61" and "3e".
 
-Note that there are 3678 datagrams received and 381 lost datagrams detected.
+We see that there are 3678 datagrams received and 381 lost datagrams detected.
 We're losing about 10% of our datagrams.
+This corresponds to the "LBTRM_LOSS_RATE=10" supplied when the "lbmrcv" program
+was invoked.
 
 Note that in both transport sessions, the number of NAKs sent
 is less than the lost packets detected.
@@ -164,16 +194,169 @@ Also note that there were NCFs.
 In fact, about 10% of the NAKs generated NCFs, a high number.
 Something is definitely wrong (which will become clear later).
 
-Finally, the first transport session has a large "uninteresting topic" count
-(1806).
+Finally, the first transport session, "61",
+has a large "uninteresting topic" count (1806).
 Fully half of the received messages are not subscribed by the application.
-This represents a lot of wasted effort by UM
-and suggests that the publisher should map its two topics to separate
-transport sessions.
+This represents a lot of wasted effort by UM.
+
+**RECOMMENDATION**
+
+> The "61" transport session should split its topics across multiple transport sessions.
 
 In the real world, correcting a large "uninteresting topic" count is sometimes
 all that is needed to eliminate loss.
 (In this example, the loss is artificially introduced and is not load-based.)
+
+Let's get a little more information on the publishers of those two transport
+sessions.
+We'll start with the transport session with the large "uninteresting
+topic" count, "61".
+Search for /^Source statistics.*\nSource: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400/
+(vim lets you include newline in the search string):
+````
+Source statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:20 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+...
+````
+The publisher self-identifies as
+["lbmmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmmsrc_c),
+which is the command name.
+The large uninteresting topic count makes sense since this invocation
+uses two topics, both mapped to the same transport session.
+And the
+["lbmrcv"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmrcv_c)
+program only subscribes to one of the topics. 
+
+For completeness, let's look at the other transport session "3e".
+Search for /^Source statistics.*\nSource: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400/
+
+````
+Source statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:25 2022
+Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+...
+````
+This is the
+["lbmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmsrc_c)
+program, which only publishes one topic.
+
+Now let's find the monitoring record with the unrecoverable transport loss.
+Search for /LBT-RM datagrams unrecoverable.*: [^0]/.
+
+````
+Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:30 2022
+Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+Transport: LBT-RM
+    LBT-RM datagrams received                                 : 4994
+    LBT-RM datagram bytes received                            : 284658
+    LBT-RM NAK packets sent                                   : 342
+    LBT-RM NAKs sent                                          : 719
+    Lost LBT-RM datagrams detected                            : 514
+    NCFs received (ignored)                                   : 47
+    NCFs received (shed)                                      : 0
+    NCFs received (retransmit delay)                          : 0
+    NCFs received (unknown)                                   : 0
+    Loss recovery minimum time                                : 22ms
+    Loss recovery mean time                                   : 1315ms
+    Loss recovery maximum time                                : 2736ms
+    Minimum transmissions per individual NAK                  : 1
+    Mean transmissions per individual NAK                     : 2
+    Maximum transmissions per individual NAK                  : 8
+    Duplicate LBT-RM datagrams received                       : 0
+    LBT-RM datagrams unrecoverable (window advance)           : 0
+    LBT-RM datagrams unrecoverable (NAK generation expiration): 2
+...
+````
+It's in transport session "61", which is the "lbmmsrc" program.
+
+# RECEIVER LOG FILE
+
+Let's look at the "lbmrcv" program's log file, which had the loss.
+Let's eliminate the periodic stats that it prints.
+````
+$ egrep -av "msgs/sec\." lbmrcv.log
+LOG Level 7: Core-10403-150: Context (0x23bf1d0) created with ContextID (2488864164) and ContextName [29west_statistics_context]
+
+LOG Level 7: Core-10403-151: Reactor Only Context (0x2451680) created with ContextID (2561542953) and ContextName [(NULL)]
+
+LOG Level 7: Core-10403-150: Context (0x2344240) created with ContextID (2593251048) and ContextName []
+
+Immediate messaging target: TCP:10.29.4.101:14391
+[29west.example.multi.0][LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400[1353006825]], Beginning of Transport Session
+[29west.example.multi.0][LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557766]], Beginning of Transport Session
+[29west.example.multi.0][LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557766]], End of Transport Session
+Quitting.... received 7447 messages
+````
+
+First thing to notice is that only one "End of Transport Session" message
+is printed, corresponding to the EOS event.
+This is because the "lbmrcv" program was invoked with the "-E" option,
+which tells it to exit when it sees the first EOS.
+
+Next is to look at the number of messages received: 7447.
+
+Both the "lbmsrc" and the "lbmmsrc" programs were invoked to send
+5,000 messages.
+However, remember that the "lbmmsrc" program splits that message
+count across the number of topics it is sending - two in this case.
+And the "lbmrcv" program only subscribes to one.
+So it will only be delivered half of them.
+So it should have seen 7500 messages.
+Where did the other 53 messages go?
+And why didn't UM deliver
+[LBM_MSG_UNRECOVERABLE_LOSS](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a88920e0a4188081f9a14fc8f76c18578)
+events for them?
+
+Let's look at the other subscriber's log file, "lbmwrcv.log".
+Note that we need the "-v" option to see the BOS and EOS events,
+but this also prints each recevied message.
+So let's filter out the stats and the individual message lines.
+````
+$ egrep -av "msgs/sec\.| bytes$" lbmwrcv.log
+Core-7911-1: Onload extensions API has been dynamically loaded
+LOG Level 7: Core-10403-150: Context (0x2d14180) created with ContextID (2556399039) and ContextName [29west_statistics_context]
+
+LOG Level 7: Core-10403-151: Reactor Only Context (0x2da6630) created with ContextID (215425467) and ContextName [(NULL)]
+
+LOG Level 7: Core-10403-150: Context (0x2c99220) created with ContextID (2277114663) and ContextName [(NULL)]
+
+Immediate messaging target: TCP:10.29.4.101:14392
+Creating wildcard receiver for pattern [^29west\.example\.multi\.[01]$] - using PCRE
+new topic [29west.example.multi.0], source [LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400[1353006825]]
+new topic [29west.example.multi.0], source [LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557766]]
+new topic [29west.example.multi.1], source [LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557767]]
+[29west.example.multi.0][LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400[1353006825]], Beginning of Transport Session
+[29west.example.multi.0][LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557766]], Beginning of Transport Session
+[29west.example.multi.1][LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557767]], Beginning of Transport Session
+[29west.example.multi.0][LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557766]], End of Transport Session
+[29west.example.multi.1][LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557767]], End of Transport Session
+Quitting.... received 10000 messages
+````
+First thing to note is the presence of three BOS events, and two EOS
+events.
+Of the three BOS events, two of them are for transport session "61",
+which is the "lbmmsrc" command that publishes on two topics.
+Since the
+["lbmwrcv"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmwrcv_c)
+command subscribes to both,
+UM is designed to give each topic receiver associated with that transport
+session a BOS event.
+
+The two EOS events are for the same "61" transport session,
+one for each topic subscribed.
+The first one sets a flag telling "lbmwrc" to exit,
+but the second EOS is delivered very quickly,
+before "lbmwrcv" has had a chance to exit.
+But the third EOS is does not show up because "lbmwrcv" exited before
+UM delivered the event.
+
+Finally, note that it received all 10,000 messages.
+So we know that all messages were successfully sent.
+
+We don't yet know why the "lbmrcv" program is missing 53, or why only two
+were listed as unrecoverable on the transport session,
+or why none delivered unrecoverable loss events to the application.
+
+Let's keep digging.
 
 # PACKET CAPTURE ANALYSIS
 
@@ -187,7 +370,7 @@ Right-click on the third packet -> "Decode As..."
 * Double-click on "35101", replace with "12965", "Enter".
 Double-click on "none" (under Current), select "LBMR", "Enter".
 * Click the "duplicate" button (right of the "-" button), "Enter".
-Double-click on "35101", replace with "12090", "Enter".
+Double-click on "12965", replace with "12090", "Enter".
 Double-click on "none" (under Current), select "LBT-RM", "Enter".
 * Click the "duplicate" button (right of the "-" button), "Enter".
 Double-click on "12090", replace with "12091", "Enter".
@@ -347,13 +530,15 @@ Thus, the default intervals for NAK backoff and NAK ignore are not optimal.
 If an original packet and its first retransmission are lost,
 the second NAK is guaranteed to generate an NCF.
 
-Informatica recommends shortening the source's ignore interval and
-lengthening the NAK backoff interval:
+**RECOMMENDATION**
+
+> Informatica recommends shortening the source's ignore interval and lengthening the NAK backoff interval:
 ````
-source transport_lbtrm_ignore_interval 200
-receiver transport_lbtrm_nak_backoff_interval 400
+    source transport_lbtrm_ignore_interval 200
+    receiver transport_lbtrm_nak_backoff_interval 400
 ````
-Now the NAK backoff interval will vary between 200 and 600,
+
+With these settings, the NAK backoff interval will vary between 200 and 600,
 and will never be below the ignore interval of 200.
 
 Some might object to lengthening the NAK backoff since low latency is
@@ -364,3 +549,214 @@ then you probably had a severe traffic overload.
 Sending retransmissions on top of the already overloading traffic just
 makes the situation worse.
 Better to wait extra time to let the burst subside.
+
+## Tail Loss
+
+Let's look at the end of transport session "3e" (from the "lbmsrc" program).
+I've eliminated some of the columns for brevity.
+Filter on "lbtrm.hdr.session_id==0xf9d74f3e" and scroll to the bottom to see
+the last hundred packets:
+````
+...
+11939  7.842658  239.101.3.10  DATA(RX) sqn 0x132e Port 12090 ID 0xf9d74f3e DATA
+11947  7.987105  239.101.3.10  SM sqn 0x2 Port 12090 ID 0xf9d74f3e
+11950  8.043788  10.29.4.121   NAK 1 naks Port 12090 ID 0xf9d74f3e
+11952  8.044001  239.101.3.10  NCF 1 ncfs Port 12090 ID 0xf9d74f3e
+11954  8.145825  10.29.4.121   NAK 1 naks Port 12090 ID 0xf9d74f3e
+11955  8.146054  239.101.3.10  DATA(RX) sqn 0x1356 Port 12090 ID 0xf9d74f3e DATA
+11985  9.043312  10.29.4.121   NAK 1 naks Port 12090 ID 0xf9d74f3e
+11986  9.043586  239.101.3.10  DATA(RX) sqn 0x132e Port 12090 ID 0xf9d74f3e DATA
+12000  9.587672  239.101.3.10  SM sqn 0x3 Port 12090 ID 0xf9d74f3e
+````
+Given that the full packet capture continues for over 8 more seconds
+and we don't see more NAKs,
+it looks like the receiver was able to recover all lost packets on this
+transport session.
+
+Now let's look at transport session "61" (from the "lbmmsrc" program).
+Filter on "lbtrm.hdr.session_id==0xa7f10561" and scroll to the bottom to see
+the last hundred packets:
+````
+...
+11919 7.556737  10.29.4.121  NAK 2 naks Port 12091 ID 0xa7f10561
+11920 7.556944  239.101.3.10  DATA(RX) sqn 0x1251 Port 12091 ID 0xa7f10561 DATA
+11921 7.556966  239.101.3.10  DATA(RX) sqn 0x127b Port 12091 ID 0xa7f10561 DATA
+11925 7.666121  10.29.4.121  NAK 1 naks Port 12091 ID 0xa7f10561
+11926 7.666275  10.29.4.101  Destination unreachable (Port unreachable)
+11927 7.678624  10.29.4.121  NAK 1 naks Port 12091 ID 0xa7f10561
+11928 7.678768  10.29.4.101  Destination unreachable (Port unreachable)
+11929 7.751676  10.29.4.121  NAK 1 naks Port 12091 ID 0xa7f10561
+11930 7.751785  10.29.4.101  Destination unreachable (Port unreachable)
+11931 7.782272  10.29.4.121  NAK 1 naks Port 12091 ID 0xa7f10561
+11932 7.782364  10.29.4.101  Destination unreachable (Port unreachable)
+... (70 lines deleted containing NAKs and ICMP "Port unreachable"s)
+12031 10.347565  10.29.4.121  NAK 1 naks Port 12091 ID 0xa7f10561
+12032 10.385671  10.29.4.121  NAK 1 naks Port 12091 ID 0xa7f10561
+12033 10.505966  10.29.4.121  NAK 2 naks Port 12091 ID 0xa7f10561
+12034 10.566966  10.29.4.121  NAK 1 naks Port 12091 ID 0xa7f10561
+````
+It looks like the "lbmmsrc" program stopped responding to NAKs.
+Could it be because the program had finished sending its messages
+and exited?
+Unfortunately, the "lbmmsrc.log" file does not include a time stamp
+when it deletes the sources.
+
+**RECOMMENDATION**
+
+> Applications should log all significant events,
+including the creation and deletion of UM objects (contexts, sources,
+receivers), and include a high-precision time stamp.
+
+But notice ICMP errors, starting at packet number 11926.
+These ICMPs were sent by the kernel in response to the NAKs,
+telling the NAK sender that the destination port for the
+NAK is not open.
+Which means that the sending application, the "lbmmsrc" program,
+has exited.
+
+Note that at packet 11921 the sending application was still responding to NAKs,
+so it exited between times 7.556 and 7.666.
+You can change the time display format to absolute,
+which gives the time of the first ICMP error as 16:11:27.446.
+
+Note that the ICMP errors are not visible to UM,
+so for all outstanding lost packets,
+UM continues to retry its NAKs until the
+[transport_lbtrm_nak_generation_interval (receiver)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmnakgenerationintervalreceiver)
+expires (set to 4000 ms in "demo.cfg").
+
+Let's see when the last "original" data message was sent.
+Filter on "lbtrm.data.flags_fec_type.rx==0" and scroll to the bottom.
+````
+...
+11858  6.664  239.101.3.10  DATA sqn 0x4999 ID 0xa7f10561
+````
+
+So the "lbmmsrc" program sent its last message at time 6.664 and sent its
+last packet of any kind a little after 7.556.
+This corresponds to the DEFAULT_LINGER_SECONDS of 1 in the
+["lbmmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmmsrc_c)
+program.
+I.e. it sent its last message, slept for 1 second, and then exited.
+This did not give the receiver enough time to recover its lost messages.
+
+**RECOMMENDATION**
+
+> When a publisher has completed its operation and is ready to exit, it should delay its deletion of its source objects by at least the [transport_lbtrm_nak_generation_interval (receiver)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmnakgenerationintervalreceiver) setting. In this test, it is set to 4000 milliseconds, but it defaults to 10,000 millisecondes.
+
+## Low Unrecoverable Loss Count
+
+In the above analysis, a large number of NAKs were seen after the "lbmmsrc"
+program had exited.
+We also saw from the "lbmrcv.log" that 53 messages were unaccounted for.
+We could analyze each one of the NAKs to see if they exactly account for
+the 53 missing messages, but this level of exactness is almost never
+useful.
+Suffice it to say that a significant number of messages were still being NAKed
+for after the "lbmmsrc" program exited.
+
+Earlier we saw a Receiver Statistics (from "lbmmon.log") that showed
+an unrecoverable loss counter of 2.
+The timestamp of that monitoring record was 15:11:30.
+The ICMP packet indicated that the "lbmmsrc" program exited at
+16:11:27.446.
+So the receiver statistics record was sampled about 3 seconds after the
+"lbmmsrc" program exited, but before most of the outstanding packet gaps
+had timed out.
+
+This explains why the transport unrecoverable loss count is low: the
+"lbmrcv" program was still trying to recover the lost packets.
+When it finally gave up and marked all of those transport gaps as
+unrecoverable,
+very shortly after that the transport session itself timed out.
+So the next statistics monitoring interval, at 15:11:35,
+only had a context statistic, no transport stats.
+
+But what about the lack of topic-level unrecoverable loss,
+delivered to the lbmrcv application?
+That last context stat still showed zero for
+"Number of data message fragments unrecoverably lost".
+Why is that?
+
+This demonstrates a limitation of the UM topic delivery controller software.
+It checks for unrecoverable loss opportunistically as topic-level events
+happen.
+Once the publisher exits,
+no more topic-level events will be sent to the delivery controller.
+So even though some of the sequence number gaps have timed out and
+should have delivered unrecoverable loss to the application,
+the lack of packet events means that the loss events are not delivered.
+
+This is explained in full detail in
+[Preventing Undetected Unrecoverable Loss](Preventing Undetected Unrecoverable Loss).
+Some changes can be made to reduce or eliminate these undetected
+unrecoverable loss,
+but those changes tend to increase the loading on the receiver and can
+also introduce latency outliers.
+So for the highest performance,
+we recommend that customers simply accept that when a publisher
+exits too quickly after its last message,
+unreported loss can result.
+
+## Session Messages
+
+Set the display filter to
+"lbtrm.hdr.session_id==0xf9d74f3e && (lbtrm.sm || lbtrm.data.flags_fec_type.rx==0)"
+and scroll to the bottom.
+This displays original (not retransmit) data messages and SM messages.
+SM stands for "Session Message".
+
+Set the timestamp column to "Seconds since previously displayed packet".
+
+````
+...
+11733  0.001071  239.101.3.10  DATA sqn 0x1387 Port 12090 ID 0xf9d74f3e DATA
+11873  0.229255  239.101.3.10  SM sqn 0x0 Port 12090 ID 0xf9d74f3e
+11907  0.398620  239.101.3.10  SM sqn 0x1 Port 12090 ID 0xf9d74f3e
+11947  0.799172  239.101.3.10  SM sqn 0x2 Port 12090 ID 0xf9d74f3e
+12000  1.600567  239.101.3.10  SM sqn 0x3 Port 12090 ID 0xf9d74f3e
+````
+As you can see, the first SM is sent about 200 ms after the last data
+packet.
+The next one doubles the 200 to about 400 ms.
+The next one doubles again to 800.
+And the last one doubles again to 1600.
+Then it stops, because the "lbmsrc" program exited.
+
+The purpose of the SM messages is to allow the receiver to detect 
+transport-level tail loss,
+and to prevent switches from timing out the hardware-routed multicast flow.
+
+SMs are sent when no data messages are sent for a period of time.
+The timing of SM messages is controlled by two configuration options:
+* [transport_lbtrm_sm_minimum_interval (source)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmsmminimumintervalsource) (default=200)
+* [transport_lbtrm_sm_maximum_interval (source)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmsmmaximumintervalsource) (default=10,000)
+At these default settings, if the source is idle for more than 200 ms,
+UM starts sending SMs.
+If the source remains idle, SMs continue at doubling intervals,
+until the time would exceed 10 seconds,
+at which point the interval is forced to 10 seconds.
+
+Expand packet 11873 to see:
+````
+    Lead Sequence Number: 0x00001387 (4999)
+    Trail Sequence Number: 0x00000000 (0)
+````
+The Lead is the SQN of the latest original data message sent,
+which corresponds to packet 11733.
+The Trail is the SQN of the oldest data message stored in the source's
+transmission window.
+I.e. the source is able to retransmit any message within the range of
+Trail to Lead.
+
+(Note that these are 32-bit unsigned sequence numbers,
+and can therefore "wrap" within a fairly short time.
+After a wrap, the Lead will be a smaller number than the Trail.
+The UM algorithms handle this properly.)
+
+So if packet 11733 (data SQN 4999) had been lost,
+the SM would tell UM that it had missed data packet 4999,
+allowing the receiver to NAK for it.
+
+Notice that the SMs only react to original data messages.
+Retransmissions or NCFs do not affect the timing of SMs.
