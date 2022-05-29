@@ -57,12 +57,12 @@ and a packet capture.
 
 **RECOMMENDATION**
 
-> Informatica recommends that UM-based applications and daemons configure automatic monitoring.
+> Informatica recommends that UM-based applications and daemons configure [Automatic Monitoring](https://ultramessaging.github.io/currdoc/doc/Operations/monitoring.html#automaticmonitoring).
 >
 > Informatica also recommends the use of an "always-on" packet capture appliance, like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
 
 Although this example was somewhat contrived to demonstrate techniques,
-all of the findings here have also been found in real life with customers.
+all of the issues here have also been found in real life with customers.
 
 For a deeper explanation of enabling automatic monitoring,
 see the repository [mon_demo](https://github.com/UltraMessaging/mon_demo).
@@ -90,21 +90,36 @@ I.e., about 1 in 10 received messages will be dropped.
 
 Here's an illustration of the test:
 ![Figure 1](figure1.png)
-See [Interpreting the Data](https://github.com/UltraMessaging/mon_demo#interpreting-the-data)
-for more explanation.
 
 # PREPARATION
 
 Make sure you have a recent version of
 [Wireshark](https://www.wireshark.org).
-It is not necessary to have Ultra Messaging installed to perform
-these steps.
 
 Download the contents of
 [this repository](https://github.com/UltraMessaging/um_troubleshoot).
 Click the green "Code" button near the top of that page,
 and select "Download ZIP".
-Expand it and "cd" to it.
+Expand the zip file and "cd" to it.
+
+Some of the analysis steps below involve using the Unix shell commands,
+line "egrep" "tail", and "vim" (text editor).
+You may use a different tool set,
+but it will be easier to follow the steps if your tools support
+regular expressions.
+
+These instructions assume that you will be analyzing the output files contained
+in this GitHub repository.
+These instructions refer to specific packet numbers,
+If you run the test script yourself and analyze your own output files,
+the packet numbers will not match these instructions.
+Also, due to the randomization of packet loss,
+the situations illustrated in these output files might not
+reproduce.
+
+It is not necessary to have Ultra Messaging installed to perform
+these analysis steps.
+You will be looking at text log files and using the wireshark application.
 
 # MONITORING DATA
 
@@ -134,6 +149,7 @@ $ egrep "LBT-RM datagrams unrecoverable.*: [^0]" lbmmon.log | tail -6
 	LBT-RM datagrams unrecoverable (NAK generation expiration): 2
 	LBT-RM datagrams unrecoverable (window advance)           : 0
 	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
+$
 ````
 Two unrecoverable loss at the transport layer but none at the topic layer?
 This will be explained later.
@@ -141,7 +157,7 @@ This will be explained later.
 Let's look for recovered loss.
 
 ````
-$ egrep "Lost LBT-RM datagrams detected *: [^0]" lbmmon.log
+$ egrep "Lost LBT-RM datagrams detected *: [^0]" lbmmon.log | tail -4
     Lost LBT-RM datagrams detected                            : 374
     Lost LBT-RM datagrams detected                            : 381
     Lost LBT-RM datagrams detected                            : 514
@@ -155,10 +171,12 @@ Let's get some details.
 ````
 $ vim lbmmon.log
 ````
-Search for /Lost LBT-RM datagrams detected *: [^0]/ to find
-the first record(s) reporting loss.
-I will annotate the important lines with "*" in column 1
-(not part of lbmmon.log).
+Search for:
+````
+Lost LBT-RM datagrams detected *: [^0]
+````
+to find the first record(s) reporting loss.
+In the excerpt below, important lines will be flagged with "*" in column 1.
 ````
 ...
 Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
@@ -174,6 +192,7 @@ Transport: LBT-RM
     LBT-RM LBM messages received                              : 3602
 *   LBT-RM LBM messages received with uninteresting topic     : 1806
 ...
+
 Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
 Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
 Transport: LBT-RM
@@ -189,14 +208,16 @@ Transport: LBT-RM
 ````
 These two Receiver Statistics records are reported by the "lbmrcv" subscriber
 in the same monitoring period (at 15:11:25).
-They correspond to the two transport sessions the "lbmrcv" program is joined.
+They correspond to the two transport sessions the "lbmrcv" program joined.
 The transport sessions are identified by their "source strings":
 * LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
 * LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+
 For convenience, I'll refer to these transport sessions by the last
 two hex digits of the session ID: "61" and "3e".
 
-We see that there are 3678 datagrams received and 381 lost datagrams detected.
+For transport session "3e",
+we see that there are 3678 datagrams received and 381 lost datagrams detected.
 We're losing about 10% of our datagrams.
 This corresponds to the "LBTRM_LOSS_RATE=10" supplied when the "lbmrcv" program
 was invoked.
@@ -228,8 +249,11 @@ Let's get a little more information on the publishers of those two transport
 sessions.
 We'll start with the transport session with the large "uninteresting
 topic" count, "61".
-Search for /^Source statistics.*\nSource: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400/
-(vim lets you include newline in the search string):
+Search for:
+````
+^Source statistics.*\nSource: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
+````
+(vim lets you include newline as '\n' in the search string):
 ````
 Source statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:20 2022
 Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
@@ -239,13 +263,16 @@ The publisher self-identifies as
 ["lbmmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmmsrc_c),
 which is the command name.
 The large uninteresting topic count makes sense since this invocation
-uses two topics, both mapped to the same transport session.
-And the
+uses two topics, both mapped to the same transport session,
+and the
 ["lbmrcv"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmrcv_c)
 program only subscribes to one of the topics. 
 
 For completeness, let's look at the other transport session "3e".
-Search for /^Source statistics.*\nSource: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400/
+Search for:
+````
+^Source statistics.*\nSource: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
+````
 
 ````
 Source statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:25 2022
@@ -257,7 +284,10 @@ This is the
 program, which only publishes one topic.
 
 Now let's find the monitoring record with the unrecoverable transport loss.
-Search for /LBT-RM datagrams unrecoverable.*: [^0]/.
+Search for:
+````
+LBT-RM datagrams unrecoverable.*: [^0]
+````
 
 ````
 Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:30 2022
