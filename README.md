@@ -253,7 +253,8 @@ Search for:
 ````
 ^Source statistics.*\nSource: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
 ````
-(vim lets you include newline as '\n' in the search string):
+to find a source statistics record associated with transport session "61"
+(vim lets you include newline as '\n' in the search string).
 ````
 Source statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:20 2022
 Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
@@ -273,7 +274,7 @@ Search for:
 ````
 ^Source statistics.*\nSource: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
 ````
-
+to find a source statistics record associated with transport session "3e".
 ````
 Source statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:25 2022
 Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
@@ -283,12 +284,11 @@ This is the
 ["lbmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmsrc_c)
 program, which only publishes one topic.
 
-Now let's find the monitoring record with the unrecoverable transport loss.
 Search for:
 ````
 LBT-RM datagrams unrecoverable.*: [^0]
 ````
-
+to find the monitoring record with the unrecoverable transport loss.
 ````
 Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:30 2022
 Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
