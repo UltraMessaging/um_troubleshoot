@@ -443,10 +443,8 @@ The first displayed packet should be #111.
 Select 111. The "Info" column should be, "NAK 2 naks Port 12090 ID 0xf9d74f3e".
 This was sent by the subscriber to the publisher.
 The "ID" is the session ID.
-So this NAK corresponds to the monitoring data transport session:
-````
-Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
-````
+So this NAK corresponds to the transport session "3e".
+
 In the middle pane, expand "LBT-RM Protocol", "NAK Header", "NAK List".
 There are two entries: "4" and "1d". (These are hexadecimal numbers.)
 Also note the time: "1.281" seconds.
@@ -460,18 +458,13 @@ There should be three packets:
 112     1.281163   ...   DATA(RX) sqn 0x4 Port 12090 ID 0xf9d74f3e DATA
 161     1.325048   ...   DATA sqn 0x4 Port 12091 ID 0xa7f10561 DATA
 ````
-Packet 161 is from a different transport session (...561) and can be ignored.
+Packet 161 is from a different transport session ("61") and can be ignored.
 
 Packet 57 was the original transmission of sqn 0x4.
 The receiver did not get that packet.
-But the receiver could not detect the gap until sqn 0x5,
+But the receiver could not detect the gap until sqn 0x5.
+After a short "initial backoff" delay, the receiver sent a NAK for 0x4.
 Then the retransmission happened at packet 112, which was right after the NAK.
-
-Let's find the original data packet by filtering on "lbtrm.data.sqn==0x5".
-````
-58 1.225 ... DATA sqn 0x5 Port 12090 ID 0xf9d74f3e DATA
-163 ...
-````
 
 So packet 57 was lost, and the receiver detected this with packet 58,
 at time 1.225.
