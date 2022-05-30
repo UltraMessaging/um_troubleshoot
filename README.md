@@ -439,6 +439,9 @@ UDP port   14400   Integer, base 10   (none)    LBT-RM
 
 In the "Apply a display filter..." box, enter "lbtrm.nak", "Enter".
 The first displayed packet should be #111.
+````
+111 1.281 ... NAK 2 naks Port 12090 ID 0xf9d74f3e
+```
 
 Select 111. The "Info" column should be, "NAK 2 naks Port 12090 ID 0xf9d74f3e".
 This was sent by the subscriber to the publisher.
@@ -446,7 +449,24 @@ The "ID" is the session ID.
 So this NAK corresponds to the transport session "3e".
 
 In the middle pane, expand "LBT-RM Protocol", "NAK Header", "NAK List".
-There are two entries: "4" and "1d". (These are hexadecimal numbers.)
+````
+Frame 111: 62 bytes on wire (496 bits), 62 bytes captured (496 bits)
+...
+    Header
+        0000 .... = Version: 0x0
+        .... 0011 = Type: NAK (0x3)
+        Next Header: Data (0x00)
+        Source Unicast Port: 12090
+        Session ID: 0xf9d74f3e
+    NAK Header
+        Number of NAKs: 2
+        .... 0000 = Format: Selective (0x0)
+        [Expert Info (Warning/Sequence): NAK]
+        NAK List
+            NAK: 4 (0x00000004)
+            NAK: 29 (0x0000001d)
+````
+There are two NAKs: "0x4" and "0x1d".
 Also note the time: "1.281" seconds.
 
 ## Find the Corresponding Data Packets
@@ -475,8 +495,8 @@ which is not present in the "demo.cfg" config file, and defaults to 50 ms.
 But remember that this value is randomized between 0.5x and 1.5x,
 so the NAK delay could have been anywhere between 25 ms and 75 ms.
 
-For completeness, let's find data packet 0x1d by filtering on
-"lbtrm.data.sqn==0x1d".
+For completeness, let's find data packet for the other NAK, 0x1d,
+by filtering on "lbtrm.data.sqn==0x1d".
 ````
 82  1.250 ... DATA sqn 0x1d Port 12090 ID 0xf9d74f3e DATA
 113 1.281 ... DATA(RX) sqn 0x1d Port 12090 ID 0xf9d74f3e DATA
@@ -485,12 +505,12 @@ For completeness, let's find data packet 0x1d by filtering on
 As before,
 packet 261 is from a different transport session (...561) and can be ignored.
 
-The original was sent in packet 82, which was during the time of packet 57's
+The original was sent in packet 82, which was during the time of the NAK's
 initial backoff interval.
-So it was added to the list of packets that need to be NAKed.
-I.e., it did not get its own initial backoff interval; the first loss defines
-the start of the backoff interval. Subsequent losses before backoff expiration
-are simply added to the NAK list.
+So 0x1d was added to the list of packets that need to be NAKed.
+I.e., it did not get its own initial backoff interval.
+The first loss defines the start of the backoff interval.
+Subsequent losses before backoff expiration are simply added to the NAK list.
 
 It is rare to see one or two lost packets in a real-world loss situation.
 There might be hundreds of lost packets detected within a very short time,
