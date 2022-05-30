@@ -441,7 +441,7 @@ In the "Apply a display filter..." box, enter "lbtrm.nak", "Enter".
 The first displayed packet should be #111.
 ````
 111 1.281 ... NAK 2 naks Port 12090 ID 0xf9d74f3e
-```
+````
 
 Select 111. The "Info" column should be, "NAK 2 naks Port 12090 ID 0xf9d74f3e".
 This was sent by the subscriber to the publisher.
