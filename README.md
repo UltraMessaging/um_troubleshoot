@@ -439,12 +439,10 @@ UDP port   14400   Integer, base 10   (none)    LBT-RM
 
 In the "Apply a display filter..." box, enter "lbtrm.nak", "Enter".
 The first displayed packet should be #111.
+This is a NAK that the receiver sent back to the source.
 ````
 111 1.281 ... NAK 2 naks Port 12090 ID 0xf9d74f3e
 ````
-
-Select 111. The "Info" column should be, "NAK 2 naks Port 12090 ID 0xf9d74f3e".
-This was sent by the subscriber to the publisher.
 The "ID" is the session ID.
 So this NAK corresponds to the transport session "3e".
 
@@ -469,7 +467,7 @@ Frame 111: 62 bytes on wire (496 bits), 62 bytes captured (496 bits)
 There are two NAKs: "0x4" and "0x1d".
 Also note the time: "1.281" seconds.
 
-## Find the Corresponding Data Packets
+### Find the Corresponding Data Packets
 
 In the "Apply a display filter..." box, enter "lbtrm.data.sqn==0x4", "Enter".
 There should be three packets:
