@@ -78,10 +78,16 @@ This repository builds on the mon_demo, with some modifications.
 ## Test Setup
 
 This test runs four applications: two subscribers and two publishers.
-* lbmrcv - subscriber for one topic.
-* lbmwrcv - wildcard subscriber for two topics.
-* lbmsrc - publisher for one topic, 50,000 messages at 1,000 messages/sec.
-* lbmmsrc - publisher for two topics, 50,000 messages total
+These applications are the pre-compiled "example" applications shipped
+with UM.
+* [lbmrcv](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmrcv_c) -
+subscriber for one topic.
+* [lbmwrcv](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmwrcv_c) -
+wildcard subscriber for two topics.
+* [lbmsrc](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmsrc_c) -
+publisher for one topic, 50,000 messages at 1,000 messages/sec.
+* [lbmmsrc](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmmsrc_c) -
+publisher for two topics, 50,000 messages total
 (25,000 messages each) at 1,000 messages/sec, alternating between the topics.
 
 All four applications are configured for automatic monitoring with
