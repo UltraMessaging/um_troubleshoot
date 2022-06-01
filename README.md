@@ -107,7 +107,7 @@ I.e., about 1 in 10 received messages will be dropped.
 Here's an illustration of the test:
 ![Figure 1](figure1.png)
 
-We ran this test in May, 2022 and archived the monitoring data and
+We ran this test in May 2022 and archived the monitoring data and
 packet capture in the GitHub repository.
 The instructions below assume that you are using these archived files.
 (See also [Test Reproduction](#test-reproduction).)
@@ -129,7 +129,7 @@ enter it yourself to verify that the results match this document.
 
 Some of the analysis steps below involve using the Unix shell commands,
 like "egrep" "tail", and "vim" (text editor).
-You may use a different tool set,
+You may use a different toolset,
 but it will be easier to follow the steps if your tools support
 regular expression searches.
 
@@ -166,7 +166,7 @@ $ egrep "LBT-RM datagrams unrecoverable.*: [^0]" lbmmon.log | tail -6
 	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
 $
 ````
-Two datagrams unrecoverably lost at the transport
+Two datagrams were unrecoverably lost at the transport
 layer but none at the topic layer?
 This will be explained later.
 
@@ -187,7 +187,8 @@ Let's get some details.
 ````
 $ vim lbmmon.log
 ````
-Find the first record(s) reporting loss by searching for:
+Find the first record(s) reporting loss by
+searching for the regular expression:
 ````
 Lost LBT-RM datagrams detected *: [^0]
 ````
@@ -233,7 +234,7 @@ For convenience, I'll refer to these transport sessions by the last
 two hex digits of the session ID: "61" and "3e".
 
 For transport session "3e",
-we see that there are 3678 datagrams received and 381 lost datagrams detected.
+we see 3678 datagrams received and 381 lost datagrams detected.
 We're losing about 10% of our datagrams.
 This corresponds to the "LBTRM_LOSS_RATE=10" supplied when the "lbmrcv" program
 was invoked.
@@ -266,7 +267,7 @@ sessions.
 We'll start with the transport session with the large "uninteresting
 topic" count, "61".
 Find a source statistics record associated with transport session "61" by
-searching for:
+searching for the regular expression:
 ````
 ^Source statistics.*\nSource: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
 ````
@@ -289,7 +290,7 @@ program only subscribes to one of the topics.
 
 For completeness, let's look at the other transport session "3e".
 Find a source statistics record associated with transport session "3e" by
-searching for:
+searching for the regular expression:
 ````
 ^Source statistics.*\nSource: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
 ````
@@ -305,7 +306,7 @@ This is the
 program, which only publishes one topic.
 
 Find the monitoring record with the unrecoverable transport loss
-by searching for:
+by searching for the regular expression:
 ````
 LBT-RM datagrams unrecoverable.*: [^0]
 ````
@@ -356,7 +357,7 @@ Immediate messaging target: TCP:10.29.4.101:14391
 Quitting.... received 7447 messages
 ````
 
-First thing to notice is that only one "End of Transport Session" message
+The first thing to notice is that only one "End of Transport Session" message
 is printed, corresponding to the EOS event.
 This is because the "lbmrcv" program was invoked with the "-E" option,
 which tells it to exit when it sees the first EOS.
@@ -367,17 +368,17 @@ Both the "lbmsrc" and the "lbmmsrc" programs were invoked to send
 5,000 messages.
 However, remember that the "lbmmsrc" program splits that message
 count across the number of topics it is sending - two in this case.
-And the "lbmrcv" program only subscribes to one.
+And the "lbmrcv" program only subscribes to one of the two topics.
 So it will only be delivered half of them.
-So it should have seen 7500 messages.
+"lbmrcv" should have seen 7500 messages.
 Where did the other 53 messages go?
 And why didn't UM deliver
 [LBM_MSG_UNRECOVERABLE_LOSS](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a88920e0a4188081f9a14fc8f76c18578)
-events for them?
+events for the missing messages?
 
 Let's look at the other subscriber's log file, "lbmwrcv.log".
 Note that we need the "-v" option to see the BOS and EOS events,
-but this also prints each recevied message.
+but this also prints each received message.
 So let's filter out the stats and the individual message lines.
 ````
 $ egrep -av "msgs/sec\.| bytes$" lbmwrcv.log
@@ -400,7 +401,7 @@ new topic [29west.example.multi.1], source [LBTRM:10.29.4.121:12091:a7f10561:239
 [29west.example.multi.1][LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400[451557767]], End of Transport Session
 Quitting.... received 10000 messages
 ````
-First thing to note is the presence of three BOS events, and two EOS
+The first thing to note is the presence of three BOS events, and two EOS
 events.
 Of the three BOS events, two of them are for transport session "61",
 which is the "lbmmsrc" command that publishes on two topics.
@@ -412,10 +413,10 @@ session a BOS event.
 
 The two EOS events are for the same "61" transport session,
 one for each topic subscribed.
-The first one sets a flag telling "lbmwrc" to exit,
-but the second EOS is delivered very quickly,
-before "lbmwrcv" has had a chance to exit.
-But the third EOS is does not show up because "lbmwrcv" exited before
+The first one set a flag telling "lbmwrc" to exit,
+but the second EOS was delivered very quickly,
+before "lbmwrcv" had had a chance to exit.
+But the third EOS does not show up because "lbmwrcv" exited before
 UM delivered the event.
 
 Finally, note that it received all 10,000 messages.
@@ -423,19 +424,19 @@ So we know that all messages were successfully sent.
 
 We don't yet know why the "lbmrcv" program is missing 53, or why only two
 were listed as unrecoverable on the transport session,
-or why none delivered unrecoverable loss events to the application.
+or why there were no unrecoverable loss events delivered to the application.
 
 Let's keep digging.
 
 # PACKET CAPTURE ANALYSIS
 
-Run the WireShark application and read the "test.pcap" file.
+Run the Wireshark application and read the "test.pcap" file.
 
-Set up protocols.
-(These settings are temporary and will go away when WireShark is restarted.
+Configure Wireshark to dissect the UM packets.
+(These settings are temporary and will go away when Wireshark is restarted.
 For permanent changes, use "preferences".)
 
-Right-click on the third packet -> "Decode As..."
+Right-click on the third packet and select "Decode As..."
 * Double-click on "35101", replace with "12965", "Enter".
 Double-click on "none" (under Current), select "LBMR", "Enter".
 * Click the "duplicate" button (right of the "-" button), "Enter".
@@ -459,9 +460,10 @@ UDP port   14400   Integer, base 10   (none)    LBT-RM
 
 ## Find First NAK
 
-In the "Apply a display filter..." box, enter "lbtrm.nak", "Enter".
+In the "Apply a display filter..." box, type "lbtrm.nak", "Enter".
 The first displayed packet should be #111.
 This is a NAK that the receiver sent back to the source.
+(Some columns are eliminated below for brevity.)
 ````
 111 1.281 ... NAK 2 naks Port 12090 ID 0xf9d74f3e
 ````
@@ -487,11 +489,11 @@ Frame 111: 62 bytes on wire (496 bits), 62 bytes captured (496 bits)
             NAK: 29 (0x0000001d)
 ````
 There are two NAKs: "0x4" and "0x1d".
-Also note the time: "1.281" seconds.
+Note the time: "1.281" seconds.
 
 ### Find the Corresponding Data Packets
 
-In the "Apply a display filter..." box, enter "lbtrm.data.sqn==0x4", "Enter".
+In the "Apply a display filter..." box, type "lbtrm.data.sqn==0x4", "Enter".
 There should be three packets:
 ````
 57      1.224170   ...   DATA sqn 0x4 Port 12090 ID 0xf9d74f3e DATA
@@ -502,7 +504,6 @@ Packet 161 is from a different transport session ("61") and can be ignored.
 
 Packet 57 was the original transmission of sqn 0x4.
 The receiver did not get that packet.
-But the receiver could not detect the gap until sqn 0x5.
 After a short "initial backoff" delay, the receiver sent a NAK for 0x4.
 Then the retransmission happened at packet 112, which was right after the NAK.
 
@@ -527,18 +528,20 @@ packet 261 is from a different transport session (...561) and can be ignored.
 
 The original was sent in packet 82, which was during the time of the NAK's
 initial backoff interval.
-So 0x1d was added to the list of packets that need to be NAKed.
+So 0x1d was added to the list of datagrams that need to be NAKed.
 I.e., it did not get its own initial backoff interval.
 The first loss defines the start of the backoff interval.
 Subsequent losses before backoff expiration are simply added to the NAK list.
 
 It is rare to see one or two lost packets in a real-world loss situation.
-There might be hundreds of lost packets detected within a very short time,
+There might be hundreds of lost datagrams detected within a very short time,
 usually due to a burst of incoming traffic.
 
 ## Find First NCF
 
-In the "Apply a display filter..." box, enter "lbtrm.nak", "Enter".
+NCFs are often a sign of trouble, so let's look into it.
+
+In the "Apply a display filter..." box, type "lbtrm.ncf", "Enter".
 The first displayed packet should be:
 ````
 816   1.633756   ...  NCF 1 ncf Port 12090 ID 0xf9d74f3e
@@ -553,10 +556,11 @@ that the publisher is refusing to send the retransmission.
 In the middle pane, expand "LBT-RM Protocol", "NAK Confirmation Header".
 The "Reason" is "NAK Ignored (0x1)", which means that the NAK arrived too
 soon after the source had already sent the retransmission for the packet(s).
+
 Expand the "NCF List".
 There is one entry: 0xb89.
 
-Since this is sent in response to NAK for sequence 0xb8,
+Since this is sent in response to the NAK for sequence 0xb8,
 let's look for that NAK.
 Filter on "lbtrm.nak.list.nak==0xb8".
 You should see:
@@ -567,7 +571,7 @@ You should see:
 ````
 
 Now let's find the transmissions of the data packet.
-Filter on "lbtrm.
+Filter on "lbtrm.data.sqn==0xb8".
 ````
  356 1.416980   ...   DATA sqn 0xb8 Port 12090 ID 0xf9d74f3e
  487 1.473698   ...   DATA(RX) sqn 0xb8 Port 12090 ID 0xf9d74f3e
@@ -609,6 +613,7 @@ which is not present in the "demo.cfg" config file, and defaults to 1000 ms.
 Thus, the default intervals for NAK backoff and NAK ignore are not optimal.
 If an original packet and its first retransmission are lost,
 the second NAK is guaranteed to generate an NCF.
+This is inefficient.
 
 ### Recommendation 2
 
@@ -633,7 +638,6 @@ Better to wait extra time to let the burst subside.
 ## Tail Loss
 
 Let's look at the end of transport session "3e" (from the "lbmsrc" program).
-I've eliminated some of the columns for brevity.
 Filter on "lbtrm.hdr.session_id==0xf9d74f3e" and scroll to the bottom to see
 the last hundred packets:
 ````
@@ -648,7 +652,7 @@ the last hundred packets:
 11986  9.043586  239.101.3.10  DATA(RX) sqn 0x132e Port 12090 ID 0xf9d74f3e DATA
 12000  9.587672  239.101.3.10  SM sqn 0x3 Port 12090 ID 0xf9d74f3e
 ````
-Given that the full packet capture continues for over 8 more seconds
+Given that the full packet capture continues for over eight more seconds
 and we don't see more NAKs,
 it looks like the receiver was able to recover all lost packets on this
 transport session.
@@ -678,7 +682,7 @@ the last hundred packets:
 It looks like the "lbmmsrc" program stopped responding to NAKs.
 Could it be because the program had finished sending its messages
 and exited?
-Unfortunately, the "lbmmsrc.log" file does not include a time stamp
+Unfortunately, the "lbmmsrc.log" file does not include a timestamp
 when it deletes the sources.
 
 ### Recommendation 3
@@ -691,13 +695,18 @@ But notice ICMP errors, starting at packet number 11926.
 These ICMPs were sent by the kernel in response to the NAKs,
 telling the NAK sender that the destination port for the
 NAK is not open.
-Which means that the sending application, the "lbmmsrc" program,
+This means that the sending application, the "lbmmsrc" program,
 has exited.
 
-Note that at packet 11921 the sending application was still responding to NAKs,
+Note that at packet 11921, the sending application was still responding to NAKs,
 so it exited between times 7.556 and 7.666.
-You can change the time display format to absolute,
-which gives the time of the first ICMP error as 16:11:27.446.
+
+Change the time display format back to
+"Date and time of day".
+The time of the first ICMP error is 16:11:27.446.
+
+Change the time display format back to
+"Seconds since the beginning of capture".
 
 Note that the ICMP errors are not visible to UM,
 so for all outstanding lost packets,
@@ -717,25 +726,24 @@ last packet of any kind a little after 7.556.
 This corresponds to the DEFAULT_LINGER_SECONDS of 1 in the
 ["lbmmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmmsrc_c)
 program.
-I.e. it sent its last message, slept for 1 second, and then exited.
+I.e., it sent its last message, slept for 1 second, and then exited.
 This did not give the receiver enough time to recover its lost messages.
 
 ### Recommendation 4
 
-> When a publisher has completed its operation and is ready to exit, it should delay its deletion of its source objects by at least the [transport_lbtrm_nak_generation_interval (receiver)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmnakgenerationintervalreceiver) setting. In this test, it is set to 4000 milliseconds, but it defaults to 10,000 millisecondes.
+> When a publisher has completed its operation and is ready to exit, it should delay the deletion of its source objects by at least the [transport_lbtrm_nak_generation_interval (receiver)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmnakgenerationintervalreceiver) setting. In this test, it is set to 4000 milliseconds, but it defaults to 10,000 milliseconds.
 
 ## Low Unrecoverable Loss Count
 
 In the above analysis, a large number of NAKs were seen after the "lbmmsrc"
 program had exited.
 We also saw from the "lbmrcv.log" that 53 messages were unaccounted for.
-We could analyze each one of the NAKs to see if they exactly account for
-the 53 missing messages, but this level of exactness is almost never
-useful.
+We could analyze each of the NAKs to see if they precisely account for
+the 53 missing messages, but this level of precision is rarely useful.
 Suffice it to say that a significant number of messages were still being NAKed
 for after the "lbmmsrc" program exited.
 
-Earlier we saw a Receiver Statistics (from "lbmmon.log") that showed
+Earlier, we saw a Receiver Statistics (from "lbmmon.log") that showed
 an unrecoverable loss counter of 2.
 The timestamp of that monitoring record was 15:11:30.
 The ICMP packet indicated that the "lbmmsrc" program exited at
@@ -748,7 +756,7 @@ This explains why the transport unrecoverable loss count is low: the
 "lbmrcv" program was still trying to recover the lost packets.
 When it finally gave up and marked all of those transport gaps as
 unrecoverable,
-very shortly after that the transport session itself timed out.
+very shortly after that, the transport session itself timed out.
 So the next statistics monitoring interval, at 15:11:35,
 only had a context statistic, no transport stats.
 
@@ -764,19 +772,22 @@ happen.
 Once the publisher exits,
 no more topic-level events will be sent to the delivery controller.
 So even though some of the sequence number gaps have timed out and
-should have delivered unrecoverable loss to the application,
+should have delivered unrecoverable loss events to the application,
 the lack of packet events means that the loss events are not delivered.
 
 This is explained in full detail in
-[Preventing Undetected Unrecoverable Loss](Preventing Undetected Unrecoverable Loss).
+[Preventing Undetected Unrecoverable Loss](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#preventingundetectedloss).
+
 Some changes can be made to reduce or eliminate these undetected
 unrecoverable loss,
-but those changes tend to increase the loading on the receiver and can
+but those changes tend to increase the CPU load on the receiver, and can
 also introduce latency outliers.
 So for the highest performance,
 we recommend that customers simply accept that when a publisher
 exits too quickly after its last message,
 unreported loss can result.
+
+It is more important to have the publisher delay before deleting its source.
 
 ## Session Messages
 
@@ -786,7 +797,7 @@ and scroll to the bottom.
 This displays original (not retransmit) data messages and SM messages.
 SM stands for "Session Message".
 
-Set the timestamp column to "Seconds since previously displayed packet".
+Change the time display format to "Seconds since previously displayed packet".
 
 ````
 ...
@@ -803,9 +814,8 @@ The next one doubles again to 800.
 And the last one doubles again to 1600.
 Then it stops, because the "lbmsrc" program exited.
 
-The purpose of the SM messages is to allow the receiver to detect 
-transport-level tail loss,
-and to prevent switches from timing out the hardware-routed multicast flow.
+Change the time display format back to
+"Seconds since the beginning of capture".
 
 SMs are sent when no data messages are sent for a period of time.
 The timing of SM messages is controlled by two configuration options:
@@ -817,6 +827,10 @@ If the source remains idle, SMs continue at doubling intervals,
 until the time would exceed 10 seconds,
 at which point the interval is forced to 10 seconds.
 
+The purpose of the SM messages is to allow the receiver to detect 
+transport-level tail loss,
+and to prevent switches from timing out the hardware-routed multicast flow.
+
 Expand packet 11873 to see:
 ````
     Lead Sequence Number: 0x00001387 (4999)
@@ -826,7 +840,7 @@ The Lead is the SQN of the latest original data message sent,
 which corresponds to packet 11733.
 The Trail is the SQN of the oldest data message stored in the source's
 transmission window.
-I.e. the source is able to retransmit any message within the range of
+I.e., the source can retransmit any message within the range of
 Trail to Lead.
 
 (Note that these are 32-bit unsigned sequence numbers,
@@ -854,9 +868,9 @@ See [mon_demo](https://github.com/UltraMessaging/mon_demo) for details.
 changes for your environment, including your license key.
 * Run "./tst.sh".
 
-Be aware that the randomization of the loss will create different
-behaviours.
+Be aware that the randomization of the loss can create different
+behaviors.
 Most of the findings discovered in the above troubleshooting sequences
-should be reproducable, but not necessarily all.
+should be reproducible, but not necessarily all.
 For example, it is possible to have a test run with no unrecoverable
 tail loss.
