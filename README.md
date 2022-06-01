@@ -133,15 +133,6 @@ You may use a different tool set,
 but it will be easier to follow the steps if your tools support
 regular expressions.
 
-These instructions assume that you will be analyzing the output files contained
-in this GitHub repository.
-These instructions refer to specific packet numbers,
-If you run the test script yourself and analyze your own output files,
-the packet numbers will not match these instructions.
-Also, due to the randomization of packet loss,
-the situations illustrated in these output files might not
-reproduce.
-
 It is not necessary to have Ultra Messaging installed to perform
 these analysis steps.
 You will be looking at text log files and using the wireshark application.
