@@ -11,14 +11,19 @@ Sample multicast troubleshooting session with Ultra Messaging.
   - [Test Setup](#test-setup)
 - [PREPARATION](#preparation)
 - [MONITORING DATA](#monitoring-data)
+    - [Recommendation 1](#recommendation-1)
 - [RECEIVER LOG FILE](#receiver-log-file)
 - [PACKET CAPTURE ANALYSIS](#packet-capture-analysis)
   - [Find First NAK](#find-first-nak)
-  - [Find the Corresponding Data Packets](#find-the-corresponding-data-packets)
+    - [Find the Corresponding Data Packets](#find-the-corresponding-data-packets)
   - [Find First NCF](#find-first-ncf)
+    - [Recommendation 2](#recommendation-2)
   - [Tail Loss](#tail-loss)
+    - [Recommendation 3](#recommendation-3)
+    - [Recommendation 4](#recommendation-4)
   - [Low Unrecoverable Loss Count](#low-unrecoverable-loss-count)
   - [Session Messages](#session-messages)
+  - [TEST REPRODUCTION](#test-reproduction)
 
 <sup>(table of contents from https://luciopaiva.com/markdown-toc/)</sup>
 
@@ -55,14 +60,12 @@ This repository is intended to train Ultra Messaging users
 to perform some simple troubleshooting using monitoring data
 and a packet capture.
 
-**RECOMMENDATION**
-
-> Informatica recommends that UM-based applications and daemons configure [Automatic Monitoring](https://ultramessaging.github.io/currdoc/doc/Operations/monitoring.html#automaticmonitoring).
->
-> Informatica also recommends the use of an "always-on" packet capture appliance, like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
+Informatica recommends that UM-based applications and daemons configure [Automatic Monitoring](https://ultramessaging.github.io/currdoc/doc/Operations/monitoring.html#automaticmonitoring).
+Informatica also recommends the use of an "always-on" packet capture appliance, like [Pico's Corvil](https://www.pico.net/corvil-analytics/corvil-classic/).
 
 Although this example was somewhat contrived to demonstrate techniques,
 all of the issues here have also been found in real life with customers.
+Looks for 
 
 For a deeper explanation of enabling automatic monitoring,
 see the repository [mon_demo](https://github.com/UltraMessaging/mon_demo).
@@ -70,26 +73,32 @@ This repository builds on the mon_demo, with some modifications.
 
 ## Test Setup
 
-We ran the shell script "tst.sh", which executes a set of standard UM
-example applications and captures monitoring data (in "lbmmon.log")
-and packets (in "test.pcap").
+This test runs four applications: two subscribers and two publishers.
+* lbmrcv - subscriber for one topic.
+* lbmwrcv - wildcard subscriber for two topics.
+* lbmsrc - publisher for one topic, 50,000 messages at 1,000 messages/sec.
+* lbmmsrc - publisher for two topics, 50,000 messages total
+(25,000 messages each) at 1,000 messages/sec, alternating between the topics.
 
-To reproduce approximately the same results:
-* Edit the files "demo.cfg", "mon.cfg", and "lbmrd.xml", making
-changes for your environment.
-* Make a copy of "lbm.sh" into your home directory, making
-changes for your environment.
-* Run "tst.sh"
+All four applications are configured for automatic monitoring with
+a monitoring interval of five seconds
+(more frequent than most customers would use in production).
 
-An important part of the test is the line:
+An important part of the test is the introduction of artificial loss
+with the "lbmrcv" program:
 ````
 LBTRM_LOSS_RATE=10 lbmrcv -c demo.cfg -E 29west.example.multi.0 2>&1 >lbmrcv.log &
 ````
-This runs a subscriber with an artificial randomized LBT-RM loss rate of 10%.
+This runs a subscriber with a randomized LBT-RM loss rate of 10%.
 I.e., about 1 in 10 received messages will be dropped.
 
 Here's an illustration of the test:
 ![Figure 1](figure1.png)
+
+We ran this test in May, 2022 and archived the monitoring data and
+packet capture in the GitHub repository.
+The instructions below assume that you are using these archived files.
+(See also [Test Reproduction](#test-reproduction).)
 
 # PREPARATION
 
@@ -237,7 +246,7 @@ has a large "uninteresting topic" count (1806).
 Fully half of the received messages are not subscribed by the application.
 This represents a lot of wasted effort by UM.
 
-**RECOMMENDATION**
+### Recommendation 1
 
 > The "61" transport session should split its topics across multiple transport sessions.
 
@@ -588,7 +597,7 @@ Thus, the default intervals for NAK backoff and NAK ignore are not optimal.
 If an original packet and its first retransmission are lost,
 the second NAK is guaranteed to generate an NCF.
 
-**RECOMMENDATION**
+### Recommendation 2
 
 > Informatica recommends shortening the source's ignore interval and lengthening the NAK backoff interval:
 ````
@@ -659,7 +668,7 @@ and exited?
 Unfortunately, the "lbmmsrc.log" file does not include a time stamp
 when it deletes the sources.
 
-**RECOMMENDATION**
+### Recommendation 3
 
 > Applications should log all significant events,
 including the creation and deletion of UM objects (contexts, sources,
@@ -698,7 +707,7 @@ program.
 I.e. it sent its last message, slept for 1 second, and then exited.
 This did not give the receiver enough time to recover its lost messages.
 
-**RECOMMENDATION**
+### Recommendation 4
 
 > When a publisher has completed its operation and is ready to exit, it should delay its deletion of its source objects by at least the [transport_lbtrm_nak_generation_interval (receiver)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmnakgenerationintervalreceiver) setting. In this test, it is set to 4000 milliseconds, but it defaults to 10,000 millisecondes.
 
@@ -818,3 +827,19 @@ allowing the receiver to NAK for it.
 
 Notice that the SMs only react to original data messages.
 Retransmissions or NCFs do not affect the timing of SMs.
+
+## TEST REPRODUCTION
+
+To reproduce approximately the same results:
+* Edit the files "demo.cfg", "mon.cfg", and "lbmrd.xml", making
+changes for your environment.
+* Make a copy of "lbm.sh" into your home directory, making
+changes for your environment.
+* Run "tst.sh"
+
+Be aware that the randomization of the loss will create different
+behaviours.
+Most of the findings discovered in the above troubleshooting sequences
+should be reproducable, but not necessarily all.
+For example, it is possible to have a test run with no unrecoverable
+tail loss.
