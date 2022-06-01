@@ -73,7 +73,9 @@ solution to a diagnosed problem.
 
 For a deeper explanation of enabling automatic monitoring,
 see the repository [mon_demo](https://github.com/UltraMessaging/mon_demo).
-This repository builds on the mon_demo, with some modifications.
+This repository builds on
+[mon_demo](https://github.com/UltraMessaging/mon_demo),
+with some modifications.
 
 ## Test Setup
 
@@ -92,7 +94,7 @@ publisher for two topics, 50,000 messages total
 
 All four applications are configured for automatic monitoring with
 a monitoring interval of five seconds
-(more frequent than most customers would use in production).
+(most customers would use a much longer interval for production).
 
 An important part of the test is the introduction of artificial loss
 with the "lbmrcv" program:
@@ -115,9 +117,9 @@ The instructions below assume that you are using these archived files.
 Make sure you have a recent version of
 [Wireshark](https://www.wireshark.org).
 
-Download the contents of
-[this repository](https://github.com/UltraMessaging/um_troubleshoot).
-Click the green "Code" button near the top of that page,
+To download the contents of
+[this repository](https://github.com/UltraMessaging/um_troubleshoot),
+click the green "Code" button near the top of that page,
 and select "Download ZIP".
 Expand the zip file and "cd" to it.
 
@@ -845,11 +847,15 @@ Retransmissions or NCFs do not affect the timing of SMs.
 ## TEST REPRODUCTION
 
 To reproduce approximately the same results:
+
+* Copy the repository files onto a Linux host that has UM version 6.14
+installed.
 * Edit the files "demo.cfg", "mon.cfg", and "lbmrd.xml", making
 changes for your environment.
+See [mon_demo](https://github.com/UltraMessaging/mon_demo) for details.
 * Make a copy of "lbm.sh" into your home directory, making
-changes for your environment.
-* Run "tst.sh"
+changes for your environment, including your license key.
+* Run "./tst.sh".
 
 Be aware that the randomization of the loss will create different
 behaviours.
