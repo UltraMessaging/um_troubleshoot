@@ -65,7 +65,11 @@ Informatica also recommends the use of an "always-on" packet capture appliance, 
 
 Although this example was somewhat contrived to demonstrate techniques,
 all of the issues here have also been found in real life with customers.
-Looks for 
+
+There are several problems with the code and configuration that we
+will diagnose together with the steps below.
+Each sub-section titled "Recommendation X" contains the recommended
+solution to a diagnosed problem.
 
 For a deeper explanation of enabling automatic monitoring,
 see the repository [mon_demo](https://github.com/UltraMessaging/mon_demo).
@@ -110,6 +114,10 @@ Download the contents of
 Click the green "Code" button near the top of that page,
 and select "Download ZIP".
 Expand the zip file and "cd" to it.
+
+For best learning retention, use the tools to view the data discussed below.
+For example, if the step involves using the "egrep" command,
+enter it yourself to verify that the results match this document.
 
 Some of the analysis steps below involve using the Unix shell commands,
 line "egrep" "tail", and "vim" (text editor).
