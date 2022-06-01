@@ -128,14 +128,13 @@ For example, if the step involves using the "egrep" command,
 enter it yourself to verify that the results match this document.
 
 Some of the analysis steps below involve using the Unix shell commands,
-line "egrep" "tail", and "vim" (text editor).
+like "egrep" "tail", and "vim" (text editor).
 You may use a different tool set,
 but it will be easier to follow the steps if your tools support
-regular expressions.
+regular expression searches.
 
 It is not necessary to have Ultra Messaging installed to perform
 these analysis steps.
-You will be looking at text log files and using the wireshark application.
 
 # MONITORING DATA
 
@@ -167,7 +166,8 @@ $ egrep "LBT-RM datagrams unrecoverable.*: [^0]" lbmmon.log | tail -6
 	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
 $
 ````
-Two unrecoverable loss at the transport layer but none at the topic layer?
+Two datagrams unrecoverably lost at the transport
+layer but none at the topic layer?
 This will be explained later.
 
 Let's look for recovered loss.
@@ -187,12 +187,12 @@ Let's get some details.
 ````
 $ vim lbmmon.log
 ````
-Search for:
+Find the first record(s) reporting loss by searching for:
 ````
 Lost LBT-RM datagrams detected *: [^0]
 ````
-to find the first record(s) reporting loss.
-In the excerpt below, important lines will be flagged with "*" in column 1.
+
+In the excerpt below, important lines are flagged with "*" in column 1.
 ````
 ...
 Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
@@ -265,12 +265,14 @@ Let's get a little more information on the publishers of those two transport
 sessions.
 We'll start with the transport session with the large "uninteresting
 topic" count, "61".
-Search for:
+Find a source statistics record associated with transport session "61" by
+searching for:
 ````
 ^Source statistics.*\nSource: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
 ````
-to find a source statistics record associated with transport session "61"
-(vim lets you include newline as '\n' in the search string).
+(vim lets you include newline as '\n' in the search string)
+
+Here's an excerpt:
 ````
 Source statistics received from lbmmsrc at 10.29.3.121, process ID=5ba, object ID=260f880, context instance=12c4ba70db622fd2, domain ID=0, sent Mon May 23 15:11:20 2022
 Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
@@ -286,11 +288,13 @@ and the
 program only subscribes to one of the topics. 
 
 For completeness, let's look at the other transport session "3e".
-Search for:
+Find a source statistics record associated with transport session "3e" by
+searching for:
 ````
 ^Source statistics.*\nSource: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
 ````
-to find a source statistics record associated with transport session "3e".
+
+Here's an excerpt:
 ````
 Source statistics received from lbmsrc at 10.29.3.121, process ID=5b9, object ID=2e1c8b0, context instance=c64aaecb2b0204c8, domain ID=0, sent Mon May 23 15:11:25 2022
 Source: LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
@@ -300,11 +304,13 @@ This is the
 ["lbmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmsrc_c)
 program, which only publishes one topic.
 
-Search for:
+Find the monitoring record with the unrecoverable transport loss
+by searching for:
 ````
 LBT-RM datagrams unrecoverable.*: [^0]
 ````
-to find the monitoring record with the unrecoverable transport loss.
+
+Here's an excerpt:
 ````
 Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:30 2022
 Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
