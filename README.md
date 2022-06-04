@@ -8,6 +8,7 @@ Sample multicast troubleshooting session with Ultra Messaging.
 - [COPYRIGHT AND LICENSE](#copyright-and-license)
 - [REPOSITORY](#repository)
 - [INTRODUCTION](#introduction)
+  - [LBT-RM Reliable Protocol](#lbt-rm-reliable-protocol)
   - [Test Setup](#test-setup)
 - [PREPARATION](#preparation)
 - [MONITORING DATA](#monitoring-data)
@@ -24,6 +25,7 @@ Sample multicast troubleshooting session with Ultra Messaging.
   - [Low Unrecoverable Loss Count](#low-unrecoverable-loss-count)
   - [Session Messages](#session-messages)
   - [TEST REPRODUCTION](#test-reproduction)
+  - [MORE ON WIRESHARK](#more-on-wireshark)
 
 <sup>(table of contents from https://luciopaiva.com/markdown-toc/)</sup>
 
@@ -76,6 +78,28 @@ see the repository [mon_demo](https://github.com/UltraMessaging/mon_demo).
 This repository builds on
 [mon_demo](https://github.com/UltraMessaging/mon_demo),
 with some modifications.
+
+## LBT-RM Reliable Protocol
+
+Here is a very brief,
+simplified description of the UM Reliable Multicast protocol (LBT-RM).
+
+LBT-RM is a reliable protocol, built on multicast UDP, which is not reliable.
+The UM source adds a sequence number to each datagram.
+If the UM receiver sees a gap in sequence numbers,
+it sends a "NAK" control message back to the source for the missing datagram.
+The source gets the NAK and retransmits the desired datagram from its
+"transmission window" memory buffer.
+
+There are circumstances where the UM source will choose *not* to respond
+to a NAK with a retransmission.
+These circumstances are related to avoiding regtransmission storms.
+In these cases, the source sends an "NCF" control message instead of the
+retransmission.
+
+More information is available
+[here](https://ultramessaging.github.io/currdoc/doc/Config/grptransportlbtrmreliability.html#lbtrmdatagramlossresultinginunrecoveredmessageloss),
+but the above should be sufficient for this document.
 
 ## Test Setup
 
@@ -142,7 +166,8 @@ To start, let's look for the most serious problem: unrecoverable loss
 reported to the application (event
 [LBM_MSG_UNRECOVERABLE_LOSS](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a88920e0a4188081f9a14fc8f76c18578)
 or [LBM_MSG_UNRECOVERABLE_LOSS_BURST](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a6629139aaf902976c8df9de3f37d10db).
-The Context Stats have a counter that is incremented each time UM delivers
+The [https://ultramessaging.github.io/currdoc/doc/API/structlbm__context__stats__t__stct.html Context Statistics]
+structure has a counter that is incremented each time UM delivers
 those events to the application.
 
 ````
@@ -155,7 +180,8 @@ $
 ````
 
 So far, so good.
-But let's also look for transport unrecoverable loss.
+But let's also look for unrecoverable loss in the
+[https://ultramessaging.github.io/currdoc/doc/API/structlbm__rcv__transport__stats__lbtrm__t__stct.html Receiver Transport Statistics].
 ````
 $ egrep "LBT-RM datagrams unrecoverable.*: [^0]" lbmmon.log | tail -6
 	LBT-RM datagrams unrecoverable (window advance)           : 0
@@ -187,7 +213,9 @@ Let's get some details.
 ````
 $ vim lbmmon.log
 ````
-Find the first record(s) reporting loss by
+Find the first
+[https://ultramessaging.github.io/currdoc/doc/API/structlbm__rcv__transport__stats__lbtrm__t__stct.html Receiver Transport Statistics]
+record(s) reporting loss by
 searching for the regular expression:
 ````
 Lost LBT-RM datagrams detected *: [^0]
@@ -196,7 +224,7 @@ Lost LBT-RM datagrams detected *: [^0]
 In the excerpt below, important lines are flagged with "*" in column 1.
 ````
 ...
-Receiver statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
+Receiver Statistics received from lbmrcv at 10.29.3.101, process ID=96ed, object ID=2344240, context instance=0d5f10a7eba3f94a, domain ID=0, sent Mon May 23 15:11:25 2022
 Source: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
 Transport: LBT-RM
 *   LBT-RM datagrams received                                 : 3602
@@ -227,9 +255,12 @@ These two Receiver Statistics records are reported by the "lbmrcv" subscriber
 in the same monitoring period (at 15:11:25).
 They correspond to the two transport sessions the "lbmrcv" program joined.
 The transport sessions are identified by their "source strings":
+
 * LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
 * LBTRM:10.29.4.121:12090:f9d74f3e:239.101.3.10:14400
 
+The fourth colon-separated field is a randomly-generated session ID,
+which UM uses to ensure uniqueness.
 For convenience, I'll refer to these transport sessions by the last
 two hex digits of the session ID: "61" and "3e".
 
@@ -266,7 +297,9 @@ Let's get a little more information on the publishers of those two transport
 sessions.
 We'll start with the transport session with the large "uninteresting
 topic" count, "61".
-Find a source statistics record associated with transport session "61" by
+Find a
+[https://ultramessaging.github.io/currdoc/doc/API/structlbm__src__transport__stats__lbtrm__t__stct.html Source Transport Statistics]
+ record associated with transport session "61" by
 searching for the regular expression:
 ````
 ^Source statistics.*\nSource: LBTRM:10.29.4.121:12091:a7f10561:239.101.3.10:14400
@@ -305,8 +338,8 @@ This is the
 ["lbmsrc"](https://ultramessaging.github.io/currdoc/doc/example/index.html#examplelbmsrc_c)
 program, which only publishes one topic.
 
-Find the monitoring record with the unrecoverable transport loss
-by searching for the regular expression:
+Find the Receiver Transport Statistics record with the unrecoverable transport
+loss by searching for the regular expression:
 ````
 LBT-RM datagrams unrecoverable.*: [^0]
 ````
@@ -336,7 +369,7 @@ Transport: LBT-RM
     LBT-RM datagrams unrecoverable (NAK generation expiration): 2
 ...
 ````
-It's in transport session "61", which is the "lbmmsrc" program.
+It's in transport session "61", which published by the "lbmmsrc" program.
 
 # RECEIVER LOG FILE
 
@@ -369,8 +402,8 @@ Both the "lbmsrc" and the "lbmmsrc" programs were invoked to send
 However, remember that the "lbmmsrc" program splits that message
 count across the number of topics it is sending - two in this case.
 And the "lbmrcv" program only subscribes to one of the two topics.
-So it will only be delivered half of them.
-"lbmrcv" should have seen 7500 messages.
+So only half of those messages will be delivered.
+The "lbmrcv" subscriber should have seen 7500 messages.
 Where did the other 53 messages go?
 And why didn't UM deliver
 [LBM_MSG_UNRECOVERABLE_LOSS](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a88920e0a4188081f9a14fc8f76c18578)
@@ -413,17 +446,16 @@ session a BOS event.
 
 The two EOS events are for the same "61" transport session,
 one for each topic subscribed.
-The first one set a flag telling "lbmwrc" to exit,
-but the second EOS was delivered very quickly,
-before "lbmwrcv" had had a chance to exit.
-But the third EOS does not show up because "lbmwrcv" exited before
-UM delivered the event.
+The first one set a flag telling "lbmwrcv" to terminate.
+The second EOS was delivered very quickly, before "lbmwrcv" terminated.
+However, the third EOS does not show up because
+"lbmwrcv" exited before UM delivered the event.
 
 Finally, note that it received all 10,000 messages.
 So we know that all messages were successfully sent.
 
-We don't yet know why the "lbmrcv" program is missing 53, or why only two
-were listed as unrecoverable on the transport session,
+We don't yet know why the "lbmrcv" program is missing 53 datagrams,
+or why only two were listed as unrecoverable on the transport session,
 or why there were no unrecoverable loss events delivered to the application.
 
 Let's keep digging.
@@ -433,21 +465,23 @@ Let's keep digging.
 Run the Wireshark application and read the "test.pcap" file.
 
 Configure Wireshark to dissect the UM packets.
-(These settings are temporary and will go away when Wireshark is restarted.
-For permanent changes, use "preferences".)
 
-Right-click on the third packet and select "Decode As..."
+* Select "Analyze"->"Decode As..."
 * Double-click on "35101", replace with "12965", "Enter".
-Double-click on "none" (under Current), select "LBMR", "Enter".
+  * Double-click on "none" (under Current), select "LBMR", "Enter".
+   (This port is for Topic Resolution.)
 * Click the "duplicate" button (right of the "-" button), "Enter".
-Double-click on "12965", replace with "12090", "Enter".
-Double-click on "none" (under Current), select "LBT-RM", "Enter".
+  * Double-click on "12965", replace with "12090", "Enter".
+  * Double-click on "none" (under Current), select "LBT-RM", "Enter".
+   (This port is for NAKs.)
 * Click the "duplicate" button (right of the "-" button), "Enter".
-Double-click on "12090", replace with "12091", "Enter".
+  * Double-click on "12090", replace with "12091", "Enter".
+   (This port is for also for NAKs.)
 * Click the "duplicate" button (right of the "-" button), "Enter".
-Double-click on "12091", replace with "14400", "Enter".
+  * Double-click on "12091", replace with "14400", "Enter".
+   (This port is for also for LBT-RM data.)
 
-The "Wireshark Decode As..." should now look like this:
+The "Wireshark Decode As..." window should now look like this:
 ````
 Field      Value   Type               Default   Current
 UDP port   12965   Integer, base 10   (none)    LBMR
@@ -456,7 +490,14 @@ UDP port   12091   Integer, base 10   (none)    LBT-RM
 UDP port   14400   Integer, base 10   (none)    LBT-RM
 ````
 
-* Click "OK".
+* Click "OK". (Do *NOT* click "Save".)
+
+The port numbers used here will probably be different than those
+used by your system, so the configuration method shown above is
+chosen to be temporary,
+and will go away when Wireshark is restarted.
+We recommend using Wireshark's "Preferences->Protocols->29West" settings
+to make permanent changes for your system.
 
 ## Find First NAK
 
@@ -874,3 +915,30 @@ Most of the findings discovered in the above troubleshooting sequences
 should be reproducible, but not necessarily all.
 For example, it is possible to have a test run with no unrecoverable
 tail loss.
+
+## MORE ON WIRESHARK
+
+Wireshark is one of the Ultra Messaging team's favorite tools.
+It is a fantastic package with powerful features not mentioned here.
+For example,
+great insights can be derived from visualizing packet rates as graphs,
+and Wireshark offers great graphing capabilities.
+Also, "tshark" is a non-interactive command-line tool
+that is very handy for writing automated scripts that dissect packets
+into text files, which can then be analyzed with standard or custom
+text processing tools
+(this guide's author has written several custom Perl programs to
+make sense out of large UM packet captures).
+
+Unfortunately, with great power comes great learning curve.
+We at Informatica hope that this troubleshooting tutorial has
+given you several useful techniques,
+but it is beyond the scope of an Ultra Messaging guide to
+make you a Wireshark wizard.
+
+To learn more, start at [https://www.wireshark.org/#learnWS Learn Wireshark].
+It links to the on-line
+[https://www.wireshark.org/docs/wsug_html_chunked/ User Guide], but perhaps
+more helpful are the links to
+[https://www.youtube.com/watch?v=OU-A2EmVrKQ&list=PLW8bTPfXNGdC5Co0VnBK1yVzAwSSphzpJ free training on YouTube]
+as well as reasonably-priced formal training.
