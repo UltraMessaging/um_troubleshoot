@@ -464,22 +464,26 @@ Let's keep digging.
 
 Run the Wireshark application and read the "test.pcap" file.
 
-Configure Wireshark to dissect the UM packets.
+Configure Wireshark to dissect the UM packets as follows:
 
 * Select "Analyze"->"Decode As..."
 * Double-click on "35101", replace with "12965", "Enter".
   * Double-click on "none" (under Current), select "LBMR", "Enter".
-   (This port is for Topic Resolution.)
+
+    (This port is for Topic Resolution.)
 * Click the "duplicate" button (right of the "-" button), "Enter".
   * Double-click on "12965", replace with "12090", "Enter".
   * Double-click on "none" (under Current), select "LBT-RM", "Enter".
-   (This port is for NAKs.)
+
+    (This port is for NAKs.)
 * Click the "duplicate" button (right of the "-" button), "Enter".
   * Double-click on "12090", replace with "12091", "Enter".
-   (This port is for also for NAKs.)
+
+    (This port is for also for NAKs.)
 * Click the "duplicate" button (right of the "-" button), "Enter".
   * Double-click on "12091", replace with "14400", "Enter".
-   (This port is for also for LBT-RM data.)
+
+    (This port is for also for LBT-RM data.)
 
 The "Wireshark Decode As..." window should now look like this:
 ````
