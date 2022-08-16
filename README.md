@@ -166,7 +166,7 @@ To start, let's look for the most serious problem: unrecoverable loss
 reported to the application (event
 [LBM_MSG_UNRECOVERABLE_LOSS](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a88920e0a4188081f9a14fc8f76c18578)
 or [LBM_MSG_UNRECOVERABLE_LOSS_BURST](https://ultramessaging.github.io/currdoc/doc/API/lbm_8h.html#a6629139aaf902976c8df9de3f37d10db).
-The [https://ultramessaging.github.io/currdoc/doc/API/structlbm__context__stats__t__stct.html Context Statistics]
+The [Context Statistics](https://ultramessaging.github.io/currdoc/doc/API/structlbm__context__stats__t__stct.html)
 structure has a counter that is incremented each time UM delivers
 those events to the application.
 
@@ -181,9 +181,9 @@ $
 
 So far, so good.
 But let's also look for unrecoverable loss in the
-[https://ultramessaging.github.io/currdoc/doc/API/structlbm__rcv__transport__stats__lbtrm__t__stct.html Receiver Transport Statistics].
+[Receiver Transport Statistics](https://ultramessaging.github.io/currdoc/doc/API/structlbm__rcv__transport__stats__lbtrm__t__stct.html).
 ````
-$ egrep "LBT-RM datagrams unrecoverable.*: [^0]" lbmmon.log | tail -6
+$ egrep "LBT-RM datagrams unrecoverable" lbmmon.log | tail -6
 	LBT-RM datagrams unrecoverable (window advance)           : 0
 	LBT-RM datagrams unrecoverable (NAK generation expiration): 0
 	LBT-RM datagrams unrecoverable (window advance)           : 0
@@ -214,7 +214,7 @@ Let's get some details.
 $ vim lbmmon.log
 ````
 Find the first
-[https://ultramessaging.github.io/currdoc/doc/API/structlbm__rcv__transport__stats__lbtrm__t__stct.html Receiver Transport Statistics]
+[Receiver Transport Statistics](https://ultramessaging.github.io/currdoc/doc/API/structlbm__rcv__transport__stats__lbtrm__t__stct.html)
 record(s) reporting loss by
 searching for the regular expression:
 ````
@@ -298,7 +298,7 @@ sessions.
 We'll start with the transport session with the large "uninteresting
 topic" count, "61".
 Find a
-[https://ultramessaging.github.io/currdoc/doc/API/structlbm__src__transport__stats__lbtrm__t__stct.html Source Transport Statistics]
+[Source Transport Statistics](https://ultramessaging.github.io/currdoc/doc/API/structlbm__src__transport__stats__lbtrm__t__stct.html)
  record associated with transport session "61" by
 searching for the regular expression:
 ````
@@ -603,7 +603,7 @@ The "Reason" is "NAK Ignored (0x1)", which means that the NAK arrived too
 soon after the source had already sent the retransmission for the packet(s).
 
 Expand the "NCF List".
-There is one entry: 0xb89.
+There is one entry: 0xb8.
 
 Since this is sent in response to the NAK for sequence 0xb8,
 let's look for that NAK.
@@ -635,7 +635,7 @@ This corresponds to the configuration option
 [transport_lbtrm_nak_backoff_interval (receiver)](https://ultramessaging.github.io/currdoc/doc/Config/html1/index.html#transportlbtrmnakbackoffintervalreceiver),
 which is not present in the "demo.cfg" config file, and defaults to 200 ms.
 But remember that this value is randomized between 0.5x and 1.5x,
-so the NAK delay could have been anywhere between 150 ms and 250 ms.
+so the NAK delay could have been anywhere between 100 ms and 300 ms.
 So the timing of the second NAK is correct.
 And there were no other NAKs within the same timeframe.
 
@@ -646,7 +646,7 @@ which is not present in the "demo.cfg" config file, and defaults to 500 ms.
 So here's what happened.
 The receiver lost the original data packet with sqn 0xb8,
 and it lost its retransmission.
-After the proper NAK backoff of 150 to 250 ms, it sent another NAK.
+After the proper NAK backoff of 100 to 300 ms, it sent another NAK.
 But that NAK is still within the source's 500 ms ignore interval.
 So instead of sending the retransmission, the source sent an NCF.
 
@@ -940,9 +940,9 @@ given you several useful techniques,
 but it is beyond the scope of an Ultra Messaging guide to
 make you a Wireshark wizard.
 
-To learn more, start at [https://www.wireshark.org/#learnWS Learn Wireshark].
+To learn more, start at [Learn Wireshark](https://www.wireshark.org/#learnWS).
 It links to the on-line
-[https://www.wireshark.org/docs/wsug_html_chunked/ User Guide], but perhaps
+[User Guide](https://www.wireshark.org/docs/wsug_html_chunked/), but perhaps
 more helpful are the links to
-[https://www.youtube.com/watch?v=OU-A2EmVrKQ&list=PLW8bTPfXNGdC5Co0VnBK1yVzAwSSphzpJ free training on YouTube]
+[free training on YouTube](https://www.youtube.com/watch?v=OU-A2EmVrKQ&list=PLW8bTPfXNGdC5Co0VnBK1yVzAwSSphzpJ)
 as well as reasonably-priced formal training.
