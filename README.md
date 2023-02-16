@@ -464,7 +464,16 @@ Let's keep digging.
 
 Run the Wireshark application and read the "test.pcap" file.
 
-Configure Wireshark to dissect the UM packets as follows:
+Make the "Wireshark Decode As..." window look like this:
+````
+Field      Value   Type               Default   Current
+UDP port   12965   Integer, base 10   (none)    LBMR
+UDP port   12090   Integer, base 10   (none)    LBT-RM
+UDP port   12091   Integer, base 10   (none)    LBT-RM
+UDP port   14400   Integer, base 10   (none)    LBT-RM
+````
+
+Detailed instructions:
 
 * Select "Analyze"->"Decode As..."
 * Double-click on "35101", replace with "12965", "Enter".
