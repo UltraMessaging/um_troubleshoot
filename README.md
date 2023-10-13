@@ -3,31 +3,32 @@ Sample multicast troubleshooting session with Ultra Messaging.
 
 # Table of contents
 
-- [um_troubleshoot](#um_troubleshoot)
-- [Table of contents](#table-of-contents)
-- [COPYRIGHT AND LICENSE](#copyright-and-license)
-- [REPOSITORY](#repository)
-- [INTRODUCTION](#introduction)
-  - [LBT-RM Reliable Protocol](#lbt-rm-reliable-protocol)
-  - [Test Setup](#test-setup)
-- [PREPARATION](#preparation)
-- [MONITORING DATA](#monitoring-data)
-    - [Recommendation 1](#recommendation-1)
-- [RECEIVER LOG FILE](#receiver-log-file)
-- [PACKET CAPTURE ANALYSIS](#packet-capture-analysis)
-  - [Find First NAK](#find-first-nak)
-    - [Find the Corresponding Data Packets](#find-the-corresponding-data-packets)
-  - [Find First NCF](#find-first-ncf)
-    - [Recommendation 2](#recommendation-2)
-  - [Tail Loss](#tail-loss)
-    - [Recommendation 3](#recommendation-3)
-    - [Recommendation 4](#recommendation-4)
-  - [Low Unrecoverable Loss Count](#low-unrecoverable-loss-count)
-  - [Session Messages](#session-messages)
-  - [TEST REPRODUCTION](#test-reproduction)
-  - [MORE ON WIRESHARK](#more-on-wireshark)
-
-<sup>(table of contents from https://luciopaiva.com/markdown-toc/)</sup>
+<!-- mdtoc-start -->
+&bull; [um_troubleshoot](#um_troubleshoot)  
+&bull; [Table of contents](#table-of-contents)  
+&bull; [COPYRIGHT AND LICENSE](#copyright-and-license)  
+&bull; [REPOSITORY](#repository)  
+&bull; [INTRODUCTION](#introduction)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [LBT-RM Reliable Protocol](#lbt-rm-reliable-protocol)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Test Setup](#test-setup)  
+&bull; [PREPARATION](#preparation)  
+&bull; [MONITORING DATA](#monitoring-data)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Recommendation 1](#recommendation-1)  
+&bull; [RECEIVER LOG FILE](#receiver-log-file)  
+&bull; [PACKET CAPTURE ANALYSIS](#packet-capture-analysis)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Find First NAK](#find-first-nak)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Find the Corresponding Data Packets](#find-the-corresponding-data-packets)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Find First NCF](#find-first-ncf)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Recommendation 2](#recommendation-2)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Tail Loss](#tail-loss)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Recommendation 3](#recommendation-3)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Recommendation 4](#recommendation-4)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Low Unrecoverable Loss Count](#low-unrecoverable-loss-count)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Session Messages](#session-messages)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [TEST REPRODUCTION](#test-reproduction)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [MORE ON WIRESHARK](#more-on-wireshark)  
+<!-- TOC created by '../mdtoc/mdtoc.pl README.md' (see https://github.com/fordsfords/mdtoc) -->
+<!-- mdtoc-end -->
 
 # COPYRIGHT AND LICENSE
 
