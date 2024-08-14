@@ -6,6 +6,6 @@ for F in *.md; do :
     # Update doc table of contents (see https://github.com/fordsfords/mdtoc).
     if which mdtoc.pl >/dev/null; then mdtoc.pl -b "" $F;
     elif [ -x ../mdtoc/mdtoc.pl ]; then ../mdtoc/mdtoc.pl -b "" $F;
-    else echo "FYI: mdtoc.pl not found; see https://github.com/fordsfords/mdtoc"; exit 1; fi
+    else echo "FYI: mdtoc.pl not found; see https://github.com/fordsfords/mdtoc"; fi
   fi
 done
